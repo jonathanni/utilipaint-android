@@ -4,6 +4,11 @@
     <string name="app_name">UtiliPaint</string>
     <string name="action_settings">Settings</string>
     <string name="action_file">File</string>
+    
+    <string name="action_new">New…</string>
+    <string name="action_open">Open…</string>
+    <string name="action_save">Save</string>
+    
     <string name="default_screen">Welcome! To start, create a new image with File > New… or open an existing image with File > Open…</string>
 
 </resources>
