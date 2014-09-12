@@ -4,12 +4,16 @@
         android:id="@+id/action_file"
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
-        android:title="@string/action_file" />
-    
+        android:title="@string/action_file"/>
+    <item
+        android:id="@+id/action_edit"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_edit"/>
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:showAsAction="never"
+        android:showAsAction="ifRoom"
         android:title="@string/action_settings"/>
 
 </menu>

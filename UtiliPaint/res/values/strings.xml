@@ -10,5 +10,6 @@
     <string name="action_save">Save</string>
     
     <string name="default_screen">Welcome! To start, create a new image with File > New… or open an existing image with File > Open…</string>
+    <string name="action_edit">Edit</string>
 
 </resources>
