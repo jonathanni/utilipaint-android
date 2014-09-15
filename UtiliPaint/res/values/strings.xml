@@ -11,5 +11,10 @@
     
     <string name="default_screen">Welcome! To start, create a new image with File > New… or open an existing image with File > Open…</string>
     <string name="action_edit">Edit</string>
+    <string name="action_help">Help</string>
+    <string name="action_about">About</string>
+    
+    <string name="dialog_about_message">Placeholder Text</string>
+    <string name="dialog_about_title">Title</string>
 
 </resources>
