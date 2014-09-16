@@ -79,7 +79,9 @@ public class PaintWelcomeActivity extends Activity implements
 		switch (id) {
 		case R.id.action_new:
 			Intent intent = new Intent(this, PaintActivity.class);
+			startActivity(intent);
 			return true;
+			
 		case R.id.action_about:
 			showDialogBox(R.string.dialog_about_title,
 					R.string.dialog_about_message);

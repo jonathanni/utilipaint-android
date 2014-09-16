@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -47,6 +48,14 @@ public class PaintActivity extends Activity {
 	 * The instance of the {@link SystemUiHider} for this activity.
 	 */
 	private SystemUiHider mSystemUiHider;
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		this.getMenuInflater().inflate(R.menu.paint_activity_menu, menu);
+
+		return super.onCreateOptionsMenu(menu);
+	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +126,7 @@ public class PaintActivity extends Activity {
 		// Upon interacting with UI controls, delay any scheduled hide()
 		// operations to prevent the jarring behavior of controls going away
 		// while interacting with the UI.
-		findViewById(R.id.dummy_button).setOnTouchListener(
+		findViewById(R.id.ad_content).setOnTouchListener(
 				mDelayHideTouchListener);
 	}
 

@@ -9,6 +9,7 @@
          The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
          TextureView, etc.
+         
     -->
 
     <TextView
@@ -25,6 +26,7 @@
     <!--
          This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows.
+         
     -->
 
     <FrameLayout
@@ -42,13 +44,13 @@
             android:orientation="horizontal"
             tools:ignore="UselessParent" >
 
-            <Button
-                android:id="@+id/dummy_button"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
+            <TextView
+                android:id="@+id/ad_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/dummy_button" />
+                android:orientation="horizontal"
+                android:text="@string/ad_content"
+                android:textSize="24sp" />
         </LinearLayout>
     </FrameLayout>
 

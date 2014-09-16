@@ -14,7 +14,7 @@
     <string name="dialog_about_message">Placeholder Text</string>
     <string name="dialog_about_title">About UtiliPaint</string>
     <string name="title_activity_paint">PaintActivity</string>
-    <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="ad_content">Placeholder Ad Content</string>
 
 </resources>
