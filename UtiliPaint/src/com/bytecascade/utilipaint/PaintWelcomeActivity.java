@@ -1,19 +1,18 @@
-package com.example.utilipaint;
+package com.bytecascade.utilipaint;
 
+import com.example.utilipaint.R;
+
+import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
-import android.support.v4.app.FragmentActivity;
-import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.PopupMenu;
 
-public class PaintActivity extends FragmentActivity implements
+public class PaintWelcomeActivity extends Activity implements
 		PopupMenu.OnMenuItemClickListener {
 
 	@Override
@@ -35,6 +34,8 @@ public class PaintActivity extends FragmentActivity implements
 		PopupMenu popup = new PopupMenu(this, v);
 		MenuInflater inflater = this.getMenuInflater();
 
+		popup.setOnMenuItemClickListener(this);
+
 		switch (v.getId()) {
 		case R.id.action_file:
 			inflater.inflate(R.menu.file_popup_menu, popup.getMenu());
@@ -49,8 +50,10 @@ public class PaintActivity extends FragmentActivity implements
 		return true;
 	}
 
-	public boolean showDialogBox(View v) {
-		new NoticeDialogFragment(v).show(getSupportFragmentManager(), "about");
+	public boolean showDialogBox(int title, int message) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		builder.setMessage(message).setTitle(title);
+		builder.show();
 
 		return true;
 	}
@@ -74,34 +77,15 @@ public class PaintActivity extends FragmentActivity implements
 		int id = item.getItemId();
 
 		switch (id) {
+		case R.id.action_new:
+			Intent intent = new Intent(this, PaintActivity.class);
+			return true;
 		case R.id.action_about:
-			showDialogBox(findViewById(id));
+			showDialogBox(R.string.dialog_about_title,
+					R.string.dialog_about_message);
 			return true;
 		}
 
 		return false;
-	}
-
-	private class NoticeDialogFragment extends DialogFragment {
-
-		View v;
-
-		public NoticeDialogFragment(View v) {
-			this.v = v;
-		}
-
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-
-			switch (v.getId()) {
-			case R.id.action_about:
-				builder.setMessage(R.string.dialog_about_message).setTitle(
-						R.string.dialog_about_title);
-				break;
-			}
-
-			return builder.create();
-		}
 	}
 }
