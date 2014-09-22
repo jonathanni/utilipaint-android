@@ -10,7 +10,8 @@ import android.view.View;
 import android.widget.PopupMenu;
 
 public abstract class MenuActivity extends Activity {
-	boolean showPopup(PopupMenu.OnMenuItemClickListener listener, View v) {
+	boolean showPopup(PopupMenu.OnMenuItemClickListener listener, View v,
+			boolean showAll) {
 		PopupMenu popup = new PopupMenu(this, v);
 		MenuInflater inflater = this.getMenuInflater();
 
@@ -24,6 +25,10 @@ public abstract class MenuActivity extends Activity {
 			inflater.inflate(R.menu.help_popup_menu, popup.getMenu());
 			break;
 		}
+
+		if (showAll)
+			for (int i = 0; i < popup.getMenu().size(); i++)
+				popup.getMenu().getItem(i).setVisible(true);
 
 		popup.show();
 

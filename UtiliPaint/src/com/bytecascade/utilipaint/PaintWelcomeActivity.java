@@ -21,7 +21,7 @@ public class PaintWelcomeActivity extends MenuActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
-		this.getMenuInflater().inflate(R.menu.paint_welcome_menu, menu);
+		this.getMenuInflater().inflate(R.menu.paint_activity_menu, menu);
 
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -33,7 +33,7 @@ public class PaintWelcomeActivity extends MenuActivity implements
 		switch (id) {
 		case R.id.action_file:
 		case R.id.action_help:
-			showPopup(this, findViewById(id));
+			showPopup(this, findViewById(id), false);
 			return true;
 		}
 
@@ -48,10 +48,10 @@ public class PaintWelcomeActivity extends MenuActivity implements
 		case R.id.action_new:
 			Intent intent = new Intent(this, PaintActivity.class);
 			startActivity(intent);
-			
+
 			finish();
 			return true;
-			
+
 		case R.id.action_about:
 			getDialogBox(R.string.dialog_about_title,
 					R.string.dialog_about_message).show();

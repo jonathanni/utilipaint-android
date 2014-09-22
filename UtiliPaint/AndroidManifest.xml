@@ -27,6 +27,7 @@
             android:name="com.bytecascade.utilipaint.PaintActivity"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_paint"
+            android:screenOrientation="landscape"
             android:theme="@style/FullscreenTheme" >
         </activity>
     </application>

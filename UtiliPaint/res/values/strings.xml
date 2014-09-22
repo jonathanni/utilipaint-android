@@ -9,8 +9,10 @@
     <string name="action_save">Save</string>
     <string name="default_screen">Welcome! To start, create a new image with File > New… or open an existing image with File > Open…</string>
     <string name="action_edit">Edit</string>
+    <string name="action_exit">Exit</string>
     <string name="action_help">Help</string>
     <string name="action_about">About</string>
+    <string name="action_save_as">Save As…</string>
     <string name="dialog_about_message">Placeholder Text</string>
     <string name="dialog_about_title">About UtiliPaint</string>
     <string name="dialog_new_message">Are you sure you want to create a new image? The current one will be destroyed.</string>

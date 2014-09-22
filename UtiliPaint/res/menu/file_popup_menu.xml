@@ -16,7 +16,17 @@
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
         android:title="@string/action_save"
-        android:visible="false">
-    </item>
+        android:visible="false"/>
+    <item
+        android:id="@+id/action_save_as"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_save_as"
+        android:visible="false"/>
+    <item
+        android:id="@+id/action_exit"
+        android:orderInCategory="100"
+        android:showAsAction="ifRoom"
+        android:title="@string/action_exit"/>
 
 </menu>

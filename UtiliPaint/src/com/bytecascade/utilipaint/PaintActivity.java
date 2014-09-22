@@ -1,5 +1,7 @@
 package com.bytecascade.utilipaint;
 
+import java.io.Serializable;
+
 import com.example.utilipaint.R;
 
 import android.content.DialogInterface;
@@ -11,14 +13,32 @@ import android.view.WindowManager;
 import android.widget.PopupMenu;
 
 public class PaintActivity extends MenuActivity implements
-		PopupMenu.OnMenuItemClickListener {
+		PopupMenu.OnMenuItemClickListener, Serializable {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 4565354057203995257L;
 	private int dialogResult;
+
+	@Override
+	public void onSaveInstanceState(Bundle frozenState) {
+		frozenState.putSerializable("current_activity", this);
+		// etc. until you have everything important stored in the bundle
+	}
+
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		// Always call the superclass so it can restore the view hierarchy
+		super.onRestoreInstanceState(savedInstanceState);
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.
 		this.getMenuInflater().inflate(R.menu.paint_activity_menu, menu);
+
+		for (int i = 0; i < menu.size(); i++)
+			menu.getItem(i).setVisible(true);
 
 		return super.onCreateOptionsMenu(menu);
 	}
@@ -41,7 +61,7 @@ public class PaintActivity extends MenuActivity implements
 		switch (id) {
 		case R.id.action_file:
 		case R.id.action_help:
-			showPopup(this, findViewById(id));
+			showPopup(this, findViewById(id), true);
 			return true;
 		}
 
@@ -73,7 +93,7 @@ public class PaintActivity extends MenuActivity implements
 
 			Intent intent = new Intent(this, PaintActivity.class);
 			startActivity(intent);
-			
+
 			finish();
 			return true;
 
