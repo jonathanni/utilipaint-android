@@ -17,6 +17,8 @@
     <string name="dialog_about_title">About UtiliPaint</string>
     <string name="dialog_new_message">Are you sure you want to create a new image? The current one will be destroyed.</string>
     <string name="dialog_new_title">Confirmation</string>
+    <string name="dialog_exit_message">Are you sure you want to quit? The current image will be destroyed.</string>
+    <string name="dialog_exit_title">Confirmation</string>
     <string name="title_activity_paint">PaintActivity</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
     <string name="ad_content">Placeholder Ad Content</string>

@@ -4,6 +4,7 @@ import java.io.Serializable;
 
 import com.example.utilipaint.R;
 
+import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -94,6 +95,10 @@ public class PaintActivity extends MenuActivity implements
 			Intent intent = new Intent(this, PaintActivity.class);
 			startActivity(intent);
 
+			finish();
+			return true;
+
+		case R.id.action_exit:
 			finish();
 			return true;
 

@@ -2,6 +2,7 @@ package com.bytecascade.utilipaint;
 
 import com.example.utilipaint.R;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -11,6 +12,8 @@ import android.widget.PopupMenu;
 public class PaintWelcomeActivity extends MenuActivity implements
 		PopupMenu.OnMenuItemClickListener {
 
+	private int dialogResult;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -52,6 +55,10 @@ public class PaintWelcomeActivity extends MenuActivity implements
 			finish();
 			return true;
 
+		case R.id.action_exit:
+			finish();
+			return true;
+
 		case R.id.action_about:
 			getDialogBox(R.string.dialog_about_title,
 					R.string.dialog_about_message).show();
@@ -59,5 +66,9 @@ public class PaintWelcomeActivity extends MenuActivity implements
 		}
 
 		return false;
+	}
+	
+	protected void setDialogResult(int selection) {
+		dialogResult = selection;
 	}
 }
