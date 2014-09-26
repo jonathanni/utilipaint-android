@@ -5,8 +5,8 @@
     android:background="#0099cc"
     tools:context="com.bytecascade.utilipaint.PaintActivity" >
 
-    <GLSurfaceView android:id="@+id/graphics_view" >
-    </GLSurfaceView>
+    <com.bytecascade.utilipaint.PaintGLSurfaceView android:id="@+id/graphics_view" >
+    </com.bytecascade.utilipaint.PaintGLSurfaceView>
 
     <FrameLayout
         android:layout_width="match_parent"

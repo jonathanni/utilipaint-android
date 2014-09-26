@@ -24,7 +24,6 @@ public class PaintActivity extends MenuActivity implements
 
 	@Override
 	public void onSaveInstanceState(Bundle frozenState) {
-		frozenState.putSerializable("current_activity", this);
 		// etc. until you have everything important stored in the bundle
 	}
 
