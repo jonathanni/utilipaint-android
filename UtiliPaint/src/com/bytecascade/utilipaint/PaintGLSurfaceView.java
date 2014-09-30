@@ -7,6 +7,8 @@ public class PaintGLSurfaceView extends GLSurfaceView {
 
 	public PaintGLSurfaceView(Context context) {
 		super(context);
+		
+		setRenderer(new PaintRenderer());
 	}
 
 }
