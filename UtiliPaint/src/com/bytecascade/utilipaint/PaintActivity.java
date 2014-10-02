@@ -1,5 +1,11 @@
 package com.bytecascade.utilipaint;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.io.Serializable;
 
 import com.example.utilipaint.R;
@@ -52,6 +58,29 @@ public class PaintActivity extends MenuActivity implements
 		WindowManager.LayoutParams attrs = this.getWindow().getAttributes();
 		attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
 		this.getWindow().setAttributes(attrs);
+	}
+
+	File testFile;
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+		/*
+		testFile = new File(this.getFilesDir(), "test.dat");
+		BufferedReader st = null;
+		try {
+			st = new BufferedReader(new FileReader(testFile));
+			//st.write("ASDF\n");
+			System.out.println(st.readLine());
+			st.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}*/
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
 	}
 
 	@Override
