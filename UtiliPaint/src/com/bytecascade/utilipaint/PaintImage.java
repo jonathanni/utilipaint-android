@@ -9,6 +9,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
+import android.util.Log;
 
 public class PaintImage {
 	private final Context activityContext;
@@ -20,28 +21,18 @@ public class PaintImage {
 	private int textureDataHandle;
 
 	private final String vertexShaderCode =
-	// Test
+
 	"attribute vec2 a_TexCoordinate;" + "varying vec2 v_TexCoordinate;"
-			+
-			// End Test
-			"uniform mat4 uMVPMatrix;" + "attribute vec4 vPosition;"
-			+ "void main() {" + "  gl_Position = vPosition * uMVPMatrix;" +
-			// Test
-			"v_TexCoordinate = a_TexCoordinate;" +
-			// End Test
-			"}";
+			+ "uniform mat4 uMVPMatrix;" + "attribute vec4 vPosition;"
+			+ "void main() {" + "  gl_Position = vPosition * uMVPMatrix;"
+			+ "v_TexCoordinate = a_TexCoordinate;" + "}";
 
 	private final String fragmentShaderCode = "precision mediump float;"
 			+ "uniform vec4 vColor;"
-			+
-			// Test
-			"uniform sampler2D u_Texture;" + "varying vec2 v_TexCoordinate;"
-			+
-			// End Test
-			"void main() {"
-			+
-			// "gl_FragColor = vColor;" +
-			"gl_FragColor = (v_Color * texture2D(u_Texture, v_TexCoordinate));"
+			+ "uniform sampler2D u_Texture;"
+			+ "varying vec2 v_TexCoordinate;"
+			+ "void main() {"
+			+ "gl_FragColor = (vColor * texture2D(u_Texture, v_TexCoordinate));"
 			+ "}";
 
 	private final int shaderProgram;
@@ -60,6 +51,8 @@ public class PaintImage {
 
 	private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // Order to draw vertices
 	private final int vertexStride = COORDS_PER_VERTEX * 4; // Bytes per vertex
+
+	private float color[] = { 1, 1, 1, 1 };
 
 	private Bitmap image;
 
@@ -98,17 +91,52 @@ public class PaintImage {
 		GLES20.glBindAttribLocation(shaderProgram, 0, "a_TexCoordinate");
 
 		GLES20.glLinkProgram(shaderProgram);
-
-		// Load the texture
-		if (image != null)
-			setImage(image);
 	}
 
 	public void draw(float[] MVPMatrix) {
+		GLES20.glUseProgram(shaderProgram);
 
+		Log.e("GL ERROR: ", "ERR " + GLES20.glGetError());
+
+		positionHandle = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
+
+		GLES20.glEnableVertexAttribArray(positionHandle);
+		GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
+				GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
+
+		colorHandle = GLES20.glGetUniformLocation(shaderProgram, "vColor");
+
+		GLES20.glUniform4fv(colorHandle, 1, color, 0);
+
+		textureUniformHandle = GLES20.glGetAttribLocation(shaderProgram,
+				"u_Texture");
+		textureCoordinateHandle = GLES20.glGetAttribLocation(shaderProgram,
+				"a_TextCoordinate");
+
+		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDataHandle);
+		GLES20.glUniform1i(textureUniformHandle, 0);
+
+		imageTextureCoordinates.position(0);
+
+		GLES20.glVertexAttribPointer(textureCoordinateHandle,
+				textureCoordinateDataSize, GLES20.GL_FLOAT, false, 0,
+				imageTextureCoordinates);
+		GLES20.glEnableVertexAttribArray(textureCoordinateHandle);
+
+		MVPMatrixHandle = GLES20.glGetUniformLocation(shaderProgram,
+				"uMVPMatrix");
+
+		GLES20.glUniformMatrix4fv(MVPMatrixHandle, 1, false, MVPMatrix, 0);
+		GLES20.glDrawElements(GLES20.GL_TRIANGLES, drawOrder.length,
+				GLES20.GL_UNSIGNED_SHORT, drawListBuffer);
+		GLES20.glDisableVertexAttribArray(positionHandle);
 	}
 
 	public static int loadTexture(final Context context, Bitmap image) {
+		Log.i("Load Texture ",
+				"Bitmap w: " + image.getWidth() + " h: " + image.getHeight());
+
 		final int[] textureHandle = new int[1];
 
 		GLES20.glGenTextures(1, textureHandle, 0);
@@ -131,6 +159,8 @@ public class PaintImage {
 		}
 
 		if (textureHandle[0] == 0) {
+			Log.e("GL ERROR: ", "ERR " + GLES20.glGetError());
+
 			throw new RuntimeException("Error loading texture.");
 		}
 
@@ -141,7 +171,8 @@ public class PaintImage {
 		return image;
 	}
 
-	public void setImage(Bitmap image) {
+	public void loadTextureHandle() {
+		// Load the texture
 		textureDataHandle = loadTexture(activityContext, image);
 	}
 }

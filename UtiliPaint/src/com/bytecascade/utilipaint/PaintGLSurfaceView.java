@@ -7,22 +7,23 @@ import android.util.AttributeSet;
 
 public class PaintGLSurfaceView extends GLSurfaceView {
 
-	PaintRenderer renderer;
+	private Context context;
+	private PaintRenderer renderer;
 
 	public PaintGLSurfaceView(Context context) {
 		super(context);
+		this.context = context;
 		setEGLContextClientVersion(2);
-		setRenderer(renderer = new PaintRenderer(context, null));
 	}
 
 	public PaintGLSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
+		this.context = context;
 		setEGLContextClientVersion(2);
-		setRenderer(renderer = new PaintRenderer(context, null));
 	}
 
 	public void setImage(Bitmap image) {
-		renderer.setImage(image);
+		setRenderer(renderer = new PaintRenderer(context, image));
 	}
 
 }

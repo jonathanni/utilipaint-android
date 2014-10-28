@@ -22,11 +22,6 @@ public class PaintRenderer implements Renderer {
 		this.image = new PaintImage(context, image);
 	}
 	
-	public void setImage(Bitmap image)
-	{
-		this.image.setImage(image);
-	}
-	
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		// Set the background frame color
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -49,6 +44,8 @@ public class PaintRenderer implements Renderer {
 
 	    //This Projection Matrix is applied to object coordinates in the onDrawFrame() method
 	    Matrix.frustumM(projMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
+	    
+	    image.loadTextureHandle();
 	}
 
 	public static int loadShader(int type, String shaderCode) {

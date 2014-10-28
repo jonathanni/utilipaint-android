@@ -7,6 +7,8 @@ import com.example.utilipaint.R;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,6 +54,15 @@ public class PaintActivity extends MenuActivity implements
 		WindowManager.LayoutParams attrs = this.getWindow().getAttributes();
 		attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
 		this.getWindow().setAttributes(attrs);
+		
+		final BitmapFactory.Options op = new BitmapFactory.Options();
+		op.inScaled = false;
+
+		final PaintGLSurfaceView glsv = (PaintGLSurfaceView) findViewById(R.id.graphics_view);
+		final Resources res = this.getResources();
+
+		// Renderer is actually created here
+		glsv.setImage(BitmapFactory.decodeResource(res, R.drawable.test, op));
 	}
 
 	File testFile;
@@ -60,16 +71,11 @@ public class PaintActivity extends MenuActivity implements
 	protected void onStart() {
 		super.onStart();
 		/*
-		testFile = new File(this.getFilesDir(), "test.dat");
-		BufferedReader st = null;
-		try {
-			st = new BufferedReader(new FileReader(testFile));
-			//st.write("ASDF\n");
-			System.out.println(st.readLine());
-			st.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}*/
+		 * testFile = new File(this.getFilesDir(), "test.dat"); BufferedReader
+		 * st = null; try { st = new BufferedReader(new FileReader(testFile));
+		 * //st.write("ASDF\n"); System.out.println(st.readLine()); st.close();
+		 * } catch (IOException e) { e.printStackTrace(); }
+		 */
 	}
 
 	@Override
