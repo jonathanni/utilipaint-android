@@ -14,38 +14,40 @@ public class PaintRenderer implements Renderer {
 	private final float[] MVPMatrix = new float[16];
 	private final float[] projMatrix = new float[16];
 	private final float[] vMatrix = new float[16];
-	
+
 	private PaintImage image;
-	
-	public PaintRenderer(Context context, Bitmap image)
-	{
-		this.image = new PaintImage(context, image);
+	private Context context;
+	private Bitmap rawImage;
+
+	public PaintRenderer(Context context, Bitmap image) {
+		this.context = context;
+		this.rawImage = image;
 	}
-	
+
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		// Set the background frame color
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		this.image = new PaintImage(context, rawImage);
 	}
 
 	public void onDrawFrame(GL10 unused) {
 		// Redraw background color
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
-		
+
 		Matrix.setLookAtM(vMatrix, 0, 0, 0, -3, 0, 0, 0, 0, 1, 0);
 		Matrix.multiplyMM(MVPMatrix, 0, projMatrix, 0, vMatrix, 0);
-		
+
 		image.draw(MVPMatrix);
 	}
 
 	public void onSurfaceChanged(GL10 unused, int width, int height) {
 		GLES20.glViewport(0, 0, width, height);
-		
+
 		float ratio = (float) width / height;
 
-	    //This Projection Matrix is applied to object coordinates in the onDrawFrame() method
-	    Matrix.frustumM(projMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
-	    
-	    image.loadTextureHandle();
+		// This Projection Matrix is applied to object coordinates in the
+		// onDrawFrame() method
+		Matrix.frustumM(projMatrix, 0, -ratio, ratio, -1, 1, 3, 7);
 	}
 
 	public static int loadShader(int type, String shaderCode) {

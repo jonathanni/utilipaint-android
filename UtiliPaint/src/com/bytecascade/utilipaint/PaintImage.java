@@ -91,15 +91,17 @@ public class PaintImage {
 		GLES20.glBindAttribLocation(shaderProgram, 0, "a_TexCoordinate");
 
 		GLES20.glLinkProgram(shaderProgram);
+		
+		textureDataHandle = loadTexture(activityContext, image);
 	}
 
 	public void draw(float[] MVPMatrix) {
 		GLES20.glUseProgram(shaderProgram);
 
-		Log.e("GL ERROR: ", "ERR " + GLES20.glGetError());
-
 		positionHandle = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
 
+		System.out.println(GLES20.GL_MAX_VERTEX_ATTRIBS);
+		
 		GLES20.glEnableVertexAttribArray(positionHandle);
 		GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
 				GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
@@ -169,10 +171,5 @@ public class PaintImage {
 
 	public Bitmap getImage() {
 		return image;
-	}
-
-	public void loadTextureHandle() {
-		// Load the texture
-		textureDataHandle = loadTexture(activityContext, image);
 	}
 }
