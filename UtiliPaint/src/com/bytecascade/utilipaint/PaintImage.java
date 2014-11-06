@@ -52,7 +52,7 @@ public class PaintImage {
 	private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // Order to draw vertices
 	private final int vertexStride = COORDS_PER_VERTEX * 4; // Bytes per vertex
 
-	private float color[] = { 1, 1, 1, 1 };
+	private float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	private Bitmap image;
 
@@ -63,19 +63,21 @@ public class PaintImage {
 		bb.order(ByteOrder.nativeOrder());
 
 		vertexBuffer = bb.asFloatBuffer();
-		vertexBuffer.put(imageCoords).position(0);
+		vertexBuffer.put(imageCoords);
+		vertexBuffer.position(0);
 
-		final float[] imageTextureCoordinateData = { -0.5f, 0.5f, -0.5f, -0.5f,
-				0.5f, -0.5f, 0.5f, 0.5f };
+		final float[] imageTextureCoordinateData = { -1f, 1f, -1f, -1f,
+				1f, -1f, 1f, 1f };
 
 		imageTextureCoordinates = ByteBuffer
 				.allocateDirect(imageTextureCoordinateData.length * 4)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 		imageTextureCoordinates.put(imageTextureCoordinateData).position(0);
 
-		ByteBuffer dlb = ByteBuffer.allocateDirect(imageCoords.length * 2)
-				.order(ByteOrder.nativeOrder());
-		drawListBuffer = dlb.asShortBuffer().put(drawOrder);
+		ByteBuffer dlb = ByteBuffer.allocateDirect(imageCoords.length * 2);
+		dlb.order(ByteOrder.nativeOrder());
+		drawListBuffer = dlb.asShortBuffer();
+		drawListBuffer.put(drawOrder);
 		drawListBuffer.position(0);
 
 		int vertexShader = PaintRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
@@ -91,7 +93,7 @@ public class PaintImage {
 		GLES20.glBindAttribLocation(shaderProgram, 0, "a_TexCoordinate");
 
 		GLES20.glLinkProgram(shaderProgram);
-		
+
 		textureDataHandle = loadTexture(activityContext, image);
 	}
 
@@ -100,8 +102,8 @@ public class PaintImage {
 
 		positionHandle = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
 
-		System.out.println(GLES20.GL_MAX_VERTEX_ATTRIBS);
-		
+		// Log.e("E ", "" + GLES20.glGetError());
+
 		GLES20.glEnableVertexAttribArray(positionHandle);
 		GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
 				GLES20.GL_FLOAT, false, vertexStride, vertexBuffer);
@@ -113,14 +115,13 @@ public class PaintImage {
 		textureUniformHandle = GLES20.glGetAttribLocation(shaderProgram,
 				"u_Texture");
 		textureCoordinateHandle = GLES20.glGetAttribLocation(shaderProgram,
-				"a_TextCoordinate");
+				"a_TexCoordinate");
 
 		GLES20.glActiveTexture(GLES20.GL_TEXTURE0);
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDataHandle);
 		GLES20.glUniform1i(textureUniformHandle, 0);
 
 		imageTextureCoordinates.position(0);
-
 		GLES20.glVertexAttribPointer(textureCoordinateHandle,
 				textureCoordinateDataSize, GLES20.GL_FLOAT, false, 0,
 				imageTextureCoordinates);
@@ -155,7 +156,7 @@ public class PaintImage {
 
 			// Load the bitmap into the bound texture.
 			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, image, 0);
-
+			
 			// Recycle the bitmap, since its data has been loaded into OpenGL.
 			image.recycle();
 		}
