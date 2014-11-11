@@ -34,7 +34,7 @@ public class PaintRenderer implements Renderer {
 		// Redraw background color
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-		Matrix.setLookAtM(vMatrix, 0, 0, 0, -3, 0, 0, 0, 0, 1, 0);
+		Matrix.setLookAtM(vMatrix, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0);
 		Matrix.multiplyMM(MVPMatrix, 0, projMatrix, 0, vMatrix, 0);
 
 		image.draw(MVPMatrix);

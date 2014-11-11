@@ -44,10 +44,10 @@ public class PaintImage {
 
 	// number of coordinates per vertex in this array
 	static final int COORDS_PER_VERTEX = 2;
-	static float imageCoords[] = { 1, 1, // top left
-			1, -1, // bottom left
-			-1, -1, // bottom right
-			-1, 1 }; // top right
+	static float imageCoords[] = { -1, 1, // top left
+			-1, -1, // bottom left
+			1, -1, // bottom right
+			1, 1 }; // top right
 
 	private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // Order to draw vertices
 	private final int vertexStride = COORDS_PER_VERTEX * 4; // Bytes per vertex

@@ -63,6 +63,8 @@ public class PaintActivity extends MenuActivity implements
 
 		// Renderer is actually created here
 		glsv.setImage(BitmapFactory.decodeResource(res, R.drawable.test, op));
+		
+		System.out.println("CANVAS SIZE: " + glsv.getWidth() +"x" + glsv.getHeight());
 	}
 
 	File testFile;
