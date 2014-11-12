@@ -55,6 +55,8 @@ public class PaintImage {
 	private float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	private Bitmap image;
+	
+	private float translateX, translateY;
 
 	public PaintImage(final Context activityContext, Bitmap image) {
 		this.activityContext = activityContext;
@@ -172,5 +174,21 @@ public class PaintImage {
 
 	public Bitmap getImage() {
 		return image;
+	}
+
+	public float getTranslateX() {
+		return translateX;
+	}
+
+	public void setTranslateX(float translateX) {
+		this.translateX = translateX;
+	}
+
+	public float getTranslateY() {
+		return translateY;
+	}
+
+	public void setTranslateY(float translateY) {
+		this.translateY = translateY;
 	}
 }

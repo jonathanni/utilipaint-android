@@ -10,8 +10,10 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.view.MotionEventCompat;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.PopupMenu;
 

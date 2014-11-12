@@ -61,4 +61,8 @@ public class PaintRenderer implements Renderer {
 
 		return shader;
 	}
+
+	public PaintImage getImage() {
+		return image;
+	}
 }
