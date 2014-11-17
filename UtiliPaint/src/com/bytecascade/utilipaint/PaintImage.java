@@ -100,11 +100,11 @@ public class PaintImage {
 	}
 
 	public void draw(float[] MVPMatrix) {
+		// Update texture scaling
+		
 		GLES20.glUseProgram(shaderProgram);
 
 		positionHandle = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
-
-		// Log.e("E ", "" + GLES20.glGetError());
 
 		GLES20.glEnableVertexAttribArray(positionHandle);
 		GLES20.glVertexAttribPointer(positionHandle, COORDS_PER_VERTEX,
