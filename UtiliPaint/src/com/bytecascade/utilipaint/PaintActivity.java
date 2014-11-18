@@ -2,18 +2,21 @@ package com.bytecascade.utilipaint;
 
 import java.io.File;
 import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.util.Locale;
+import java.util.Timer;
 
 import com.example.utilipaint.R;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.view.MotionEventCompat;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.WindowManager;
 import android.widget.PopupMenu;
 
@@ -25,6 +28,8 @@ public class PaintActivity extends MenuActivity implements
 	 */
 	private static final long serialVersionUID = 4565354057203995257L;
 	private int dialogResult;
+
+	public volatile boolean isRunning;
 
 	@Override
 	public void onSaveInstanceState(Bundle frozenState) {
@@ -51,12 +56,14 @@ public class PaintActivity extends MenuActivity implements
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
+		isRunning = true;
+
 		this.setContentView(R.layout.activity_action_paint);
 
 		WindowManager.LayoutParams attrs = this.getWindow().getAttributes();
 		attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
 		this.getWindow().setAttributes(attrs);
-		
+
 		final BitmapFactory.Options op = new BitmapFactory.Options();
 		op.inScaled = false;
 
@@ -65,8 +72,10 @@ public class PaintActivity extends MenuActivity implements
 
 		// Renderer is actually created here
 		glsv.setImage(BitmapFactory.decodeResource(res, R.drawable.test, op));
-		
-		System.out.println("CANVAS SIZE: " + glsv.getWidth() +"x" + glsv.getHeight());
+
+		Timer update = new Timer();
+
+		update.schedule(new UpdateAsyncTask(this), 0, 500);
 	}
 
 	File testFile;
@@ -74,17 +83,13 @@ public class PaintActivity extends MenuActivity implements
 	@Override
 	protected void onStart() {
 		super.onStart();
-		/*
-		 * testFile = new File(this.getFilesDir(), "test.dat"); BufferedReader
-		 * st = null; try { st = new BufferedReader(new FileReader(testFile));
-		 * //st.write("ASDF\n"); System.out.println(st.readLine()); st.close();
-		 * } catch (IOException e) { e.printStackTrace(); }
-		 */
+		isRunning = true;
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
+		isRunning = false;
 	}
 
 	@Override

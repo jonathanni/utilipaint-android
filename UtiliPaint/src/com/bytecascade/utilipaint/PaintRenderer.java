@@ -22,17 +22,20 @@ public class PaintRenderer implements Renderer
 
 	private int width, height;
 
-	public PaintRenderer(Context context, Bitmap image)
+	private PaintGLSurfaceView surfaceView;
+	
+	public PaintRenderer(Context context, Bitmap image, PaintGLSurfaceView glSurfaceView)
 	{
 		this.context = context;
 		this.rawImage = image;
+		this.surfaceView = glSurfaceView;
 	}
 
 	public void onSurfaceCreated(GL10 unused, EGLConfig config)
 	{
 		// Set the background frame color
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		this.image = new PaintImage(context, rawImage);
+		this.image = new PaintImage(context, rawImage, surfaceView);
 	}
 
 	public void onDrawFrame(GL10 unused)
@@ -40,7 +43,7 @@ public class PaintRenderer implements Renderer
 		// Redraw background color
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
-		Matrix.setLookAtM(vMatrix, 0, 0, 0, 3, 0, 0, 0, 0, 1, 0);
+		Matrix.setLookAtM(vMatrix, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0);
 		Matrix.multiplyMM(MVPMatrix, 0, projMatrix, 0, vMatrix, 0);
 
 		image.draw(MVPMatrix);

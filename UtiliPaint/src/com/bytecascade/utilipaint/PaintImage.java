@@ -4,7 +4,12 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
+import java.text.DecimalFormat;
+import java.util.Locale;
 
+import com.example.utilipaint.R;
+
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
@@ -44,10 +49,10 @@ public class PaintImage {
 
 	// number of coordinates per vertex in this array
 	static final int COORDS_PER_VERTEX = 2;
-	static float imageCoords[] = { -1, 1, // top left
-			-1, -1, // bottom left
-			1, -1, // bottom right
-			1, 1 }; // top right
+	static float imageCoords[] = { -0.5f, 0.5f, // top left
+			-0.5f, -0.5f, // bottom left
+			0.5f, -0.5f, // bottom right
+			0.5f, 0.5f }; // top right
 
 	private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // Order to draw vertices
 	private final int vertexStride = COORDS_PER_VERTEX * 4; // Bytes per vertex
@@ -55,26 +60,21 @@ public class PaintImage {
 	private float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	private Bitmap image;
-	
-	private float translateX, translateY;
 
-	public PaintImage(final Context activityContext, Bitmap image) {
+	private PaintGLSurfaceView surfaceView;
+
+	public PaintImage(final Context activityContext, Bitmap image,
+			PaintGLSurfaceView glSurfaceView) {
 		this.activityContext = activityContext;
 
 		ByteBuffer bb = ByteBuffer.allocateDirect(imageCoords.length * 4);
 		bb.order(ByteOrder.nativeOrder());
 
 		vertexBuffer = bb.asFloatBuffer();
-		vertexBuffer.put(imageCoords);
-		vertexBuffer.position(0);
-
-		final float[] imageTextureCoordinateData = { 0f, 0f, 0f, 1f,
-				1f, 1f, 1f, 0f };
 
 		imageTextureCoordinates = ByteBuffer
-				.allocateDirect(imageTextureCoordinateData.length * 4)
+				.allocateDirect(imageCoords.length * 4)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
-		imageTextureCoordinates.put(imageTextureCoordinateData).position(0);
 
 		ByteBuffer dlb = ByteBuffer.allocateDirect(imageCoords.length * 2);
 		dlb.order(ByteOrder.nativeOrder());
@@ -97,11 +97,30 @@ public class PaintImage {
 		GLES20.glLinkProgram(shaderProgram);
 
 		textureDataHandle = loadTexture(activityContext, image);
+
+		surfaceView = glSurfaceView;
 	}
 
 	public void draw(float[] MVPMatrix) {
-		// Update texture scaling
-		
+		// Texture and position scaling
+
+		// Positioning
+		vertexBuffer.put(imageCoords);
+		vertexBuffer.position(0);
+
+		final float[] psData = surfaceView.getPSInfo();
+
+		// System.out.printf("%.3f %.3f %.3f\n",
+		// psData[0] / surfaceView.getWidth(),
+		// psData[1] / surfaceView.getHeight(), psData[2]);
+
+		// Texturing
+		final float[] imageTextureCoordinateData = { 0f, 0f, 0f, 1f, 1f, 1f,
+				1f, 0f };
+
+		imageTextureCoordinates.put(imageTextureCoordinateData).position(0);
+
+		// Shader Program
 		GLES20.glUseProgram(shaderProgram);
 
 		positionHandle = GLES20.glGetAttribLocation(shaderProgram, "vPosition");
@@ -123,7 +142,6 @@ public class PaintImage {
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureDataHandle);
 		GLES20.glUniform1i(textureUniformHandle, 0);
 
-		imageTextureCoordinates.position(0);
 		GLES20.glVertexAttribPointer(textureCoordinateHandle,
 				textureCoordinateDataSize, GLES20.GL_FLOAT, false, 0,
 				imageTextureCoordinates);
@@ -158,7 +176,7 @@ public class PaintImage {
 
 			// Load the bitmap into the bound texture.
 			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, image, 0);
-			
+
 			// Recycle the bitmap, since its data has been loaded into OpenGL.
 			image.recycle();
 		}
@@ -174,21 +192,5 @@ public class PaintImage {
 
 	public Bitmap getImage() {
 		return image;
-	}
-
-	public float getTranslateX() {
-		return translateX;
-	}
-
-	public void setTranslateX(float translateX) {
-		this.translateX = translateX;
-	}
-
-	public float getTranslateY() {
-		return translateY;
-	}
-
-	public void setTranslateY(float translateY) {
-		this.translateY = translateY;
 	}
 }

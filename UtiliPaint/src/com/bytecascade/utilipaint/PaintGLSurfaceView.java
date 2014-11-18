@@ -1,5 +1,11 @@
 package com.bytecascade.utilipaint;
 
+import java.text.DecimalFormat;
+import java.util.Locale;
+
+import com.example.utilipaint.R;
+
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLSurfaceView;
@@ -7,8 +13,7 @@ import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
-public class PaintGLSurfaceView extends GLSurfaceView
-{
+public class PaintGLSurfaceView extends GLSurfaceView {
 
 	private Context context;
 	private PaintRenderer renderer;
@@ -25,35 +30,30 @@ public class PaintGLSurfaceView extends GLSurfaceView
 
 	private boolean dragged = true;
 
-	public PaintGLSurfaceView(Context context)
-	{
+	public PaintGLSurfaceView(Context context) {
 		super(context);
 		this.context = context;
 		setEGLContextClientVersion(2);
 		scaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 	}
 
-	public PaintGLSurfaceView(Context context, AttributeSet attrs)
-	{
+	public PaintGLSurfaceView(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		this.context = context;
 		setEGLContextClientVersion(2);
 		scaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 	}
 
-	public void setImage(Bitmap image)
-	{
-		setRenderer(renderer = new PaintRenderer(context, image));
+	public void setImage(Bitmap image) {
+		setRenderer(renderer = new PaintRenderer(context, image, this));
 	}
 
 	@Override
-	public boolean onTouchEvent(MotionEvent ev)
-	{
+	public boolean onTouchEvent(MotionEvent ev) {
 		if (renderer == null)
 			return true;
 
-		switch (ev.getAction() & MotionEvent.ACTION_MASK)
-		{
+		switch (ev.getAction() & MotionEvent.ACTION_MASK) {
 		// finger 1 down, finger 2 up
 		case MotionEvent.ACTION_DOWN:
 			mode = DRAG;
@@ -105,20 +105,17 @@ public class PaintGLSurfaceView extends GLSurfaceView
 	}
 
 	private class ScaleListener extends
-			ScaleGestureDetector.SimpleOnScaleGestureListener
-	{
+			ScaleGestureDetector.SimpleOnScaleGestureListener {
 		@Override
-		public boolean onScale(ScaleGestureDetector detector)
-		{
+		public boolean onScale(ScaleGestureDetector detector) {
 			scaleFactor *= detector.getScaleFactor();
 			scaleFactor = Math.max(MIN_ZOOM, Math.min(scaleFactor, MAX_ZOOM));
 			return true;
 		}
 	}
 
-	public float[] getPSInfo()
-	{
-		return new float[] { tX, tY, scaleFactor };
+	public float[] getPSInfo() {
+		return new float[] { -tX, tY, scaleFactor };
 	}
 
 }
