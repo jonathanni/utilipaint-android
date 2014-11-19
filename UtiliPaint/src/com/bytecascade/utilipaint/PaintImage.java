@@ -104,15 +104,30 @@ public class PaintImage {
 	public void draw(float[] MVPMatrix) {
 		// Texture and position scaling
 
+		final float[] psData = surfaceView.getPSInfo();
+
+		// -0.5f, 0.5f // top left
+		// -0.5f, -0.5f // bottom left
+		// 0.5f, -0.5f // bottom right
+		// 0.5f, 0.5f // top right
+
+		imageCoords[0] = -0.5f * psData[2] + psData[0] / surfaceView.getWidth();
+		imageCoords[1] = 0.5f * psData[2] + psData[1] / surfaceView.getHeight();
+
+		imageCoords[2] = -0.5f * psData[2] + psData[0] / surfaceView.getWidth();
+		imageCoords[3] = -0.5f * psData[2] + psData[1]
+				/ surfaceView.getHeight();
+
+		imageCoords[4] = 0.5f * psData[2] + psData[0] / surfaceView.getWidth();
+		imageCoords[5] = -0.5f * psData[2] + psData[1]
+				/ surfaceView.getHeight();
+
+		imageCoords[6] = 0.5f * psData[2] + psData[0] / surfaceView.getWidth();
+		imageCoords[7] = 0.5f * psData[2] + psData[1] / surfaceView.getHeight();
+
 		// Positioning
 		vertexBuffer.put(imageCoords);
 		vertexBuffer.position(0);
-
-		final float[] psData = surfaceView.getPSInfo();
-
-		// System.out.printf("%.3f %.3f %.3f\n",
-		// psData[0] / surfaceView.getWidth(),
-		// psData[1] / surfaceView.getHeight(), psData[2]);
 
 		// Texturing
 		final float[] imageTextureCoordinateData = { 0f, 0f, 0f, 1f, 1f, 1f,
