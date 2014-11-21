@@ -1,13 +1,8 @@
 package com.bytecascade.utilipaint;
 
-import java.text.DecimalFormat;
-import java.util.Locale;
-
-import com.example.utilipaint.R;
-
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.PointF;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
@@ -89,7 +84,7 @@ public class PaintGLSurfaceView extends GLSurfaceView {
 			break;
 		// finger 1 down, finger 2 up
 		case MotionEvent.ACTION_POINTER_UP:
-			mode = ZOOM;
+			mode = NONE;
 
 			ptX = tX;
 			ptY = tY;
@@ -108,7 +103,16 @@ public class PaintGLSurfaceView extends GLSurfaceView {
 			ScaleGestureDetector.SimpleOnScaleGestureListener {
 		@Override
 		public boolean onScale(ScaleGestureDetector detector) {
-			scaleFactor *= detector.getScaleFactor();
+			final float SCALE = detector.getScaleFactor();
+			scaleFactor *= SCALE;
+
+			oX *= SCALE;
+			oY *= SCALE;
+			tX *= SCALE;
+			tY *= SCALE;
+			ptX *= SCALE;
+			ptY *= SCALE;
+
 			scaleFactor = Math.max(MIN_ZOOM, Math.min(scaleFactor, MAX_ZOOM));
 			return true;
 		}
@@ -117,5 +121,4 @@ public class PaintGLSurfaceView extends GLSurfaceView {
 	public float[] getPSInfo() {
 		return new float[] { tX, -tY, scaleFactor };
 	}
-
 }
