@@ -106,13 +106,6 @@ public class PaintGLSurfaceView extends GLSurfaceView {
 			final float SCALE = detector.getScaleFactor();
 			scaleFactor *= SCALE;
 
-			oX *= SCALE;
-			oY *= SCALE;
-			tX *= SCALE;
-			tY *= SCALE;
-			ptX *= SCALE;
-			ptY *= SCALE;
-
 			scaleFactor = Math.max(MIN_ZOOM, Math.min(scaleFactor, MAX_ZOOM));
 			return true;
 		}

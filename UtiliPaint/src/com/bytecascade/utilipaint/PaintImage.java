@@ -29,7 +29,7 @@ public class PaintImage {
 
 	"attribute vec2 a_TexCoordinate;" + "varying vec2 v_TexCoordinate;"
 			+ "uniform mat4 uMVPMatrix;" + "attribute vec4 vPosition;"
-			+ "void main() {" + "  gl_Position = vPosition * uMVPMatrix;"
+			+ "void main() {" + "  gl_Position = uMVPMatrix * vPosition;"
 			+ "v_TexCoordinate = a_TexCoordinate;" + "}";
 
 	private final String fragmentShaderCode = "precision mediump float;"
@@ -49,10 +49,10 @@ public class PaintImage {
 
 	// number of coordinates per vertex in this array
 	static final int COORDS_PER_VERTEX = 2;
-	static float imageCoords[] = { -0.5f, 0.5f, // top left
-			-0.5f, -0.5f, // bottom left
-			0.5f, -0.5f, // bottom right
-			0.5f, 0.5f }; // top right
+	static float imageCoords[] = { 0, 0, // top left
+			0, 0, // bottom left
+			0, 0, // bottom right
+			0, 0 }; // top right
 
 	private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // Order to draw vertices
 	private final int vertexStride = COORDS_PER_VERTEX * 4; // Bytes per vertex
@@ -62,6 +62,8 @@ public class PaintImage {
 	private Bitmap image;
 
 	private PaintGLSurfaceView surfaceView;
+	
+	private float width, height;
 
 	public PaintImage(final Context activityContext, Bitmap image,
 			PaintGLSurfaceView glSurfaceView) {
@@ -111,19 +113,17 @@ public class PaintImage {
 		// 0.5f, -0.5f // bottom right
 		// 0.5f, 0.5f // top right
 
-		imageCoords[0] = -0.5f * psData[2] + psData[0] / surfaceView.getWidth();
-		imageCoords[1] = 0.5f * psData[2] + psData[1] / surfaceView.getHeight();
+		imageCoords[0] = 0;
+		imageCoords[1] = height;
 
-		imageCoords[2] = -0.5f * psData[2] + psData[0] / surfaceView.getWidth();
-		imageCoords[3] = -0.5f * psData[2] + psData[1]
-				/ surfaceView.getHeight();
+		imageCoords[2] = 0;
+		imageCoords[3] = 0;
 
-		imageCoords[4] = 0.5f * psData[2] + psData[0] / surfaceView.getWidth();
-		imageCoords[5] = -0.5f * psData[2] + psData[1]
-				/ surfaceView.getHeight();
+		imageCoords[4] = width;
+		imageCoords[5] = 0;
 
-		imageCoords[6] = 0.5f * psData[2] + psData[0] / surfaceView.getWidth();
-		imageCoords[7] = 0.5f * psData[2] + psData[1] / surfaceView.getHeight();
+		imageCoords[6] = width;
+		imageCoords[7] = height;
 
 		// Positioning
 		vertexBuffer.put(imageCoords);
@@ -207,5 +207,21 @@ public class PaintImage {
 
 	public Bitmap getImage() {
 		return image;
+	}
+
+	public float getWidth() {
+		return width;
+	}
+
+	public void setWidth(float width) {
+		this.width = width;
+	}
+
+	public float getHeight() {
+		return height;
+	}
+
+	public void setHeight(float height) {
+		this.height = height;
 	}
 }
