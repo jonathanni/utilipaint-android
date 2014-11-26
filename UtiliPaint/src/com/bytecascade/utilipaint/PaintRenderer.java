@@ -8,8 +8,10 @@ import android.graphics.Bitmap;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
+import android.util.Log;
 
-public class PaintRenderer implements Renderer {
+public class PaintRenderer implements Renderer
+{
 
 	private final float[] MVPMatrix = new float[16];
 	private final float[] projMatrix = new float[16];
@@ -24,13 +26,15 @@ public class PaintRenderer implements Renderer {
 	private PaintGLSurfaceView surfaceView;
 
 	public PaintRenderer(Context context, Bitmap image,
-			PaintGLSurfaceView glSurfaceView) {
+			PaintGLSurfaceView glSurfaceView)
+	{
 		this.context = context;
 		this.rawImage = image;
 		this.surfaceView = glSurfaceView;
 	}
 
-	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+	public void onSurfaceCreated(GL10 unused, EGLConfig config)
+	{
 		// Set the background frame color
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		this.image = new PaintImage(context, rawImage, surfaceView);
@@ -39,26 +43,28 @@ public class PaintRenderer implements Renderer {
 		this.image.setHeight(rawImage.getHeight());
 	}
 
-	public void onDrawFrame(GL10 unused) {
+	public void onDrawFrame(GL10 unused)
+	{
 		// Redraw background color
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
 		float[] transforms = surfaceView.getPSInfo();
 
-		Matrix.setLookAtM(vMatrix,0,transforms[0],0,4,transforms[0],0,0,0,1,0);
-		
-		/*
-		Matrix.setLookAtM(vMatrix, 0, width / 2 + transforms[0], height / 2
-				+ transforms[1], 10, width / 2 + transforms[0], height / 2
-				+ transforms[1], 0, 0, 1, 0);
-				*/
-		
+		final float SCALE = 1 / transforms[2];
+		float iwidth = this.image.getWidth(), iheight = this.image.getHeight();
+
+		Matrix.setLookAtM(vMatrix, 0, iwidth / 2, iheight / 2, 1, iwidth / 2,
+				iheight / 2, 0, 0, 1, 0);
+		Matrix.orthoM(projMatrix, 0, SCALE * -width / 2, SCALE * width / 2,
+				SCALE * -height / 2, SCALE * height / 2, 0.1f, 2);
+
 		Matrix.multiplyMM(MVPMatrix, 0, projMatrix, 0, vMatrix, 0);
 
 		image.draw(MVPMatrix);
 	}
 
-	public void onSurfaceChanged(GL10 unused, int width, int height) {
+	public void onSurfaceChanged(GL10 unused, int width, int height)
+	{
 		GLES20.glViewport(0, 0, width, height);
 
 		float ratio = (float) width / height;
@@ -66,12 +72,16 @@ public class PaintRenderer implements Renderer {
 		this.width = width;
 		this.height = height;
 
+		Log.d("Create Surface", "w: " + width + " h: " + height);
+
 		// This Projection Matrix is applied to object coordinates in the
 		// onDrawFrame() method
-		Matrix.frustumM(projMatrix, 0, -ratio, ratio, -1, 1, 0.1f, 5);
+
+		// Matrix.frustumM(projMatrix, 0, -ratio, ratio, -1, 1, 0.1f, 128);
 	}
 
-	public static int loadShader(int type, String shaderCode) {
+	public static int loadShader(int type, String shaderCode)
+	{
 		// Create a Vertex Shader Type Or a Fragment Shader Type
 		// (GLES20.GL_VERTEX_SHADER OR GLES20.GL_FRAGMENT_SHADER)
 		int shader = GLES20.glCreateShader(type);
@@ -83,15 +93,18 @@ public class PaintRenderer implements Renderer {
 		return shader;
 	}
 
-	public PaintImage getImage() {
+	public PaintImage getImage()
+	{
 		return image;
 	}
 
-	public int getWidth() {
+	public int getWidth()
+	{
 		return width;
 	}
 
-	public int getHeight() {
+	public int getHeight()
+	{
 		return height;
 	}
 }
