@@ -27,7 +27,7 @@ public class UpdateAsyncTask extends TimerTask {
 				activity.setTitle(activity.getString(R.string.app_name)
 						+ " "
 						+ DecimalFormat.getPercentInstance(Locale.getDefault())
-								.format(glsv.getPSInfo()[2]));
+								.format(glsv.getPSInfo()[4]));
 			}
 		});
 	}

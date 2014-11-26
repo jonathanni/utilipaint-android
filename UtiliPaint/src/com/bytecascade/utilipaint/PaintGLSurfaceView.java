@@ -112,6 +112,6 @@ public class PaintGLSurfaceView extends GLSurfaceView {
 	}
 
 	public float[] getPSInfo() {
-		return new float[] { tX, tY, scaleFactor };
+		return new float[] { tX, tY, ptX, ptY, scaleFactor };
 	}
 }
