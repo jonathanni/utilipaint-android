@@ -7,6 +7,8 @@ import java.util.TimerTask;
 import com.example.utilipaint.R;
 
 import android.app.Activity;
+import android.content.res.Resources;
+import android.graphics.BitmapFactory;
 
 public class UpdateAsyncTask extends TimerTask {
 
@@ -30,6 +32,15 @@ public class UpdateAsyncTask extends TimerTask {
 								.format(glsv.getPSInfo()[4]));
 			}
 		});
+
+		// TODO fix scaling
+		
+		final BitmapFactory.Options op = new BitmapFactory.Options();
+
+		final Resources res = activity.getResources();
+
+		PaintImage.loadTexture(activity,
+				BitmapFactory.decodeResource(res, R.drawable.test, op));
 	}
 
 }

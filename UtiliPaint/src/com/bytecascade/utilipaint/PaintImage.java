@@ -24,6 +24,7 @@ public class PaintImage {
 	private int textureCoordinateHandle;
 	private final int textureCoordinateDataSize = 2;
 	private int textureDataHandle;
+	private static int[] textureHandle = new int[1];
 
 	private final String vertexShaderCode =
 
@@ -62,7 +63,7 @@ public class PaintImage {
 	private Bitmap image;
 
 	private PaintGLSurfaceView surfaceView;
-	
+
 	private float width, height;
 
 	public PaintImage(final Context activityContext, Bitmap image,
@@ -98,6 +99,7 @@ public class PaintImage {
 
 		GLES20.glLinkProgram(shaderProgram);
 
+		createTexture();
 		textureDataHandle = loadTexture(activityContext, image);
 
 		surfaceView = glSurfaceView;
@@ -113,17 +115,30 @@ public class PaintImage {
 		// 0.5f, -0.5f // bottom right
 		// 0.5f, 0.5f // top right
 
-		imageCoords[0] = 0;
-		imageCoords[1] = height;
+		// TODO modify viewport widths
+		
+		final int VIEWPORT_HW = surfaceView.getWidth() / 2, VIEWPORT_HH = surfaceView
+				.getHeight() / 2;
 
-		imageCoords[2] = 0;
-		imageCoords[3] = 0;
+		imageCoords[0] = (float) width / 2
+				- Math.min((float) width / 2, VIEWPORT_HW);
+		imageCoords[1] = (float) height / 2
+				+ Math.min((float) height / 2, VIEWPORT_HH);
 
-		imageCoords[4] = width;
-		imageCoords[5] = 0;
+		imageCoords[2] = (float) width / 2
+				- Math.min((float) width / 2, VIEWPORT_HW);
+		imageCoords[3] = (float) height / 2
+				- Math.min((float) height / 2, VIEWPORT_HH);
 
-		imageCoords[6] = width;
-		imageCoords[7] = height;
+		imageCoords[4] = (float) width / 2
+				+ Math.min((float) width / 2, VIEWPORT_HW);
+		imageCoords[5] = (float) height / 2
+				- Math.min((float) height / 2, VIEWPORT_HH);
+
+		imageCoords[6] = (float) width / 2
+				+ Math.min((float) width / 2, VIEWPORT_HW);
+		imageCoords[7] = (float) height / 2
+				+ Math.min((float) height / 2, VIEWPORT_HH);
 
 		// Positioning
 		vertexBuffer.put(imageCoords);
@@ -171,13 +186,13 @@ public class PaintImage {
 		GLES20.glDisableVertexAttribArray(positionHandle);
 	}
 
+	public static void createTexture() {
+		GLES20.glGenTextures(1, textureHandle, 0);
+	}
+
 	public static int loadTexture(final Context context, Bitmap image) {
 		Log.i("Load Texture ",
 				"Bitmap w: " + image.getWidth() + " h: " + image.getHeight());
-
-		final int[] textureHandle = new int[1];
-
-		GLES20.glGenTextures(1, textureHandle, 0);
 
 		if (textureHandle[0] != 0) {
 			// Bind to the texture in OpenGL
