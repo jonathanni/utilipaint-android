@@ -193,7 +193,7 @@ public class PaintImage {
 	public static int loadTexture(final Context context, Bitmap image) {
 		Log.i("Load Texture ",
 				"Bitmap w: " + image.getWidth() + " h: " + image.getHeight());
-
+		
 		if (textureHandle[0] != 0) {
 			// Bind to the texture in OpenGL
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);

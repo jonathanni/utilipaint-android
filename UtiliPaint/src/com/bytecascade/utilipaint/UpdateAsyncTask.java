@@ -34,8 +34,9 @@ public class UpdateAsyncTask extends TimerTask {
 		});
 
 		// TODO fix scaling
-		
+
 		final BitmapFactory.Options op = new BitmapFactory.Options();
+		op.inSampleSize = (int) Math.round(1.0 / glsv.getPSInfo()[4]);
 
 		final Resources res = activity.getResources();
 
