@@ -12,6 +12,8 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -30,6 +32,8 @@ public class PaintActivity extends MenuActivity implements
 	private int dialogResult;
 
 	public volatile boolean isRunning;
+
+	private static final int DEFAULT_IMG_WIDTH = 800, DEFAULT_IMG_HEIGHT = 600;
 
 	@Override
 	public void onSaveInstanceState(Bundle frozenState) {
@@ -70,12 +74,17 @@ public class PaintActivity extends MenuActivity implements
 		final PaintGLSurfaceView glsv = (PaintGLSurfaceView) findViewById(R.id.graphics_view);
 		final Resources res = this.getResources();
 
-		// Renderer is actually created here
-		glsv.setImage(BitmapFactory.decodeResource(res, R.drawable.test, op));
+		Bitmap test;
+		// test = BitmapFactory.decodeResource(res, R.drawable.test, op);
+		test = Bitmap.createBitmap(DEFAULT_IMG_WIDTH, DEFAULT_IMG_HEIGHT,
+				Config.ARGB_8888);
 
 		Timer update = new Timer();
 
-		update.schedule(new UpdateAsyncTask(this), 0, 500);
+		update.schedule(new UpdateAsyncTask(this), 0, 200);
+
+		// Renderer is actually created here
+		glsv.setImage(test);
 	}
 
 	File testFile;
