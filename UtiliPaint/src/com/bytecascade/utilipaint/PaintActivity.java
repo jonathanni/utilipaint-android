@@ -35,6 +35,8 @@ public class PaintActivity extends MenuActivity implements
 
 	private static final int DEFAULT_IMG_WIDTH = 800, DEFAULT_IMG_HEIGHT = 600;
 
+	private UpdateAsyncTask task;
+
 	@Override
 	public void onSaveInstanceState(Bundle frozenState) {
 		// etc. until you have everything important stored in the bundle
@@ -72,7 +74,7 @@ public class PaintActivity extends MenuActivity implements
 		op.inScaled = false;
 
 		final PaintGLSurfaceView glsv = (PaintGLSurfaceView) findViewById(R.id.graphics_view);
-		final Resources res = this.getResources();
+		// final Resources res = this.getResources();
 
 		Bitmap test;
 		// test = BitmapFactory.decodeResource(res, R.drawable.test, op);
@@ -81,7 +83,7 @@ public class PaintActivity extends MenuActivity implements
 
 		Timer update = new Timer();
 
-		update.schedule(new UpdateAsyncTask(this), 0, 200);
+		update.schedule(task = new UpdateAsyncTask(this), 0, 200);
 
 		// Renderer is actually created here
 		glsv.setImage(test);
@@ -159,5 +161,9 @@ public class PaintActivity extends MenuActivity implements
 
 	protected void setDialogResult(int selection) {
 		dialogResult = selection;
+	}
+
+	public long getAvailableMemory() {
+		return task.getAvailableMemory();
 	}
 }
