@@ -1,6 +1,7 @@
 package com.bytecascade.utilipaint;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 import java.util.Locale;
@@ -36,6 +37,7 @@ public class PaintActivity extends MenuActivity implements
 	private static final int DEFAULT_IMG_WIDTH = 800, DEFAULT_IMG_HEIGHT = 600;
 
 	private UpdateAsyncTask task;
+	private PaintCache cache;
 
 	@Override
 	public void onSaveInstanceState(Bundle frozenState) {
@@ -74,12 +76,12 @@ public class PaintActivity extends MenuActivity implements
 		op.inScaled = false;
 
 		final PaintGLSurfaceView glsv = (PaintGLSurfaceView) findViewById(R.id.graphics_view);
-		// final Resources res = this.getResources();
+		final Resources res = this.getResources();
 
 		Bitmap test;
-		// test = BitmapFactory.decodeResource(res, R.drawable.test, op);
-		test = Bitmap.createBitmap(DEFAULT_IMG_WIDTH, DEFAULT_IMG_HEIGHT,
-				Config.ARGB_8888);
+		test = BitmapFactory.decodeResource(res, R.drawable.test, op);
+		// test = Bitmap.createBitmap(DEFAULT_IMG_WIDTH, DEFAULT_IMG_HEIGHT,
+		// Config.ARGB_8888);
 
 		Timer update = new Timer();
 
@@ -101,6 +103,16 @@ public class PaintActivity extends MenuActivity implements
 	protected void onStop() {
 		super.onStop();
 		isRunning = false;
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		try {
+			cache.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override

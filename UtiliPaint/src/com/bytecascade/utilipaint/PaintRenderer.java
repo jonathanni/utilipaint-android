@@ -24,11 +24,15 @@ public class PaintRenderer implements Renderer {
 
 	private PaintGLSurfaceView surfaceView;
 
+	private long startTime, endTime, dt;
+
 	public PaintRenderer(Context context, Bitmap image,
 			PaintGLSurfaceView glSurfaceView) {
 		this.context = context;
 		this.rawImage = image;
 		this.surfaceView = glSurfaceView;
+
+		startTime = System.currentTimeMillis();
 	}
 
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -41,13 +45,20 @@ public class PaintRenderer implements Renderer {
 	}
 
 	public void onDrawFrame(GL10 unused) {
-		// Redraw background color
+		endTime = System.currentTimeMillis();
+
+		dt = endTime - startTime;
+		if (dt < 33)
+			try {
+				Thread.sleep(33 - dt);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		startTime = System.currentTimeMillis();
+
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
 		float[] transforms = surfaceView.getPSInfo();
-
-		Log.d("com.bytecascade.utilipaint", "x: " + transforms[2] + " y: "
-				+ transforms[3]);
 
 		final float SCALE = 1 / transforms[4];
 		float iwidth = this.image.getWidth(), iheight = this.image.getHeight();
@@ -59,6 +70,7 @@ public class PaintRenderer implements Renderer {
 				SCALE * -height / 2, SCALE * height / 2, 0.1f, 2);
 		Matrix.multiplyMM(MVPMatrix, 0, projMatrix, 0, vMatrix, 0);
 
+		// Draw image
 		image.draw(MVPMatrix);
 	}
 
@@ -101,5 +113,9 @@ public class PaintRenderer implements Renderer {
 
 	public int getHeight() {
 		return height;
+	}
+
+	public long getFrameTime() {
+		return dt;
 	}
 }

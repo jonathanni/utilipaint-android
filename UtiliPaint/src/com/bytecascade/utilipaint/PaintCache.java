@@ -16,6 +16,7 @@ import android.graphics.Rect;
 public class PaintCache {
 
 	private RandomAccessFile file;
+	private File cacheFile;
 	private MappedByteBuffer buffer;
 	private FileChannel channel;
 	final int WIDTH, HEIGHT;
@@ -23,7 +24,7 @@ public class PaintCache {
 	private boolean success = true;
 
 	public PaintCache(Context context, File file) throws IOException {
-		File cacheFile = File.createTempFile("layer00", null);
+		cacheFile = File.createTempFile("layer00", null);
 		this.file = new RandomAccessFile(cacheFile, "rw");
 
 		{
@@ -72,6 +73,7 @@ public class PaintCache {
 	public void close() throws IOException {
 		channel.close();
 		this.file.close();
+		cacheFile.delete();
 		System.gc();
 	}
 }

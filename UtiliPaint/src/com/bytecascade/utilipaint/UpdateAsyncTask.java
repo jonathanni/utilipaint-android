@@ -40,7 +40,8 @@ public class UpdateAsyncTask extends TimerTask {
 						+ " "
 						+ DecimalFormat.getPercentInstance(Locale.getDefault())
 								.format(glsv.getPSInfo()[4]) + " " + MEM
-						+ " bytes");
+						+ " bytes free "
+						+ (int) (1000. / glsv.getRenderer().getFrameTime()) + " fps");
 			}
 		});
 
