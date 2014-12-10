@@ -116,29 +116,30 @@ public class PaintImage {
 		// 0.5f, 0.5f // top right
 
 		// TODO modify viewport widths
-		
-		final int VIEWPORT_HW = surfaceView.getWidth() / 2, VIEWPORT_HH = surfaceView
-				.getHeight() / 2;
 
-		imageCoords[0] = (float) width / 2
-				- Math.min((float) width / 2, VIEWPORT_HW);
-		imageCoords[1] = (float) height / 2
-				+ Math.min((float) height / 2, VIEWPORT_HH);
+		final int VIEWPORT_HW = (int) ((1.0f / psData[4])
+				* surfaceView.getWidth() / 2), VIEWPORT_HH = (int) ((1.0f / psData[4])
+				* surfaceView.getHeight() / 2);
 
-		imageCoords[2] = (float) width / 2
-				- Math.min((float) width / 2, VIEWPORT_HW);
-		imageCoords[3] = (float) height / 2
-				- Math.min((float) height / 2, VIEWPORT_HH);
+		imageCoords[0] = Math.max(0, (float) width / 2 - psData[2]
+				- VIEWPORT_HW);
+		imageCoords[1] = Math.min(height, (float) height / 2 + psData[3]
+				+ VIEWPORT_HH);
 
-		imageCoords[4] = (float) width / 2
-				+ Math.min((float) width / 2, VIEWPORT_HW);
-		imageCoords[5] = (float) height / 2
-				- Math.min((float) height / 2, VIEWPORT_HH);
+		imageCoords[2] = Math.max(0, (float) width / 2 - psData[2]
+				- VIEWPORT_HW);
+		imageCoords[3] = Math.max(0, (float) height / 2 + psData[3]
+				- VIEWPORT_HH);
 
-		imageCoords[6] = (float) width / 2
-				+ Math.min((float) width / 2, VIEWPORT_HW);
-		imageCoords[7] = (float) height / 2
-				+ Math.min((float) height / 2, VIEWPORT_HH);
+		imageCoords[4] = Math.min(width, (float) width / 2 - psData[2]
+				+ VIEWPORT_HW);
+		imageCoords[5] = Math.max(0, (float) height / 2 + psData[3]
+				- VIEWPORT_HH);
+
+		imageCoords[6] = Math.min(width, (float) width / 2 - psData[2]
+				+ VIEWPORT_HW);
+		imageCoords[7] = Math.min(height, (float) height / 2 + psData[3]
+				+ VIEWPORT_HH);
 
 		// Positioning
 		vertexBuffer.put(imageCoords);
@@ -193,7 +194,7 @@ public class PaintImage {
 	public static int loadTexture(final Context context, Bitmap image) {
 		Log.i("Load Texture ",
 				"Bitmap w: " + image.getWidth() + " h: " + image.getHeight());
-		
+
 		if (textureHandle[0] != 0) {
 			// Bind to the texture in OpenGL
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);

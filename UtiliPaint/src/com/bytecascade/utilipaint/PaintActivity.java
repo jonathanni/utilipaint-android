@@ -86,7 +86,7 @@ public class PaintActivity extends MenuActivity implements
 		Timer update = new Timer();
 
 		update.schedule(task = new UpdateAsyncTask(this), 0, 200);
-
+		
 		// Renderer is actually created here
 		glsv.setImage(test);
 	}

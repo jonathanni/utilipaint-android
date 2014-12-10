@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
@@ -77,6 +78,14 @@ public class PaintGLSurfaceView extends GLSurfaceView {
 			totX = ptotX + tX * SCALE;
 			totY = ptotY + tY * SCALE;
 
+			{
+				final float IWIDTH = renderer.getImage().getWidth(), IHEIGHT = renderer
+						.getImage().getHeight();
+
+				totX = Math.min(Math.max(-IWIDTH / 2, totX), IWIDTH / 2);
+				totY = Math.min(Math.max(-IHEIGHT / 2, totY), IHEIGHT / 2);
+			}
+
 			// double distance = Math.sqrt(Math.pow(ev.getX() - (oX + ptX), 2)
 			// + Math.pow(ev.getY() - (oY + ptY), 2));
 
@@ -141,6 +150,8 @@ public class PaintGLSurfaceView extends GLSurfaceView {
 		if ((mode == DRAG && scaleFactor != 1f && dragged) || mode == ZOOM)
 			requestRender();
 
+		Log.d("Touch: ", "" + totX + "," + totY);
+
 		return true;
 	}
 
@@ -150,7 +161,6 @@ public class PaintGLSurfaceView extends GLSurfaceView {
 		public boolean onScale(ScaleGestureDetector detector) {
 			final float SCALE = detector.getScaleFactor();
 			scaleFactor *= SCALE;
-
 			scaleFactor = Math.max(MIN_ZOOM, Math.min(scaleFactor, MAX_ZOOM));
 			return true;
 		}
