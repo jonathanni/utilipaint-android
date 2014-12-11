@@ -27,12 +27,12 @@
             tools:ignore="UselessParent" >
 
             <TextView
-                android:id="@+id/ad_content"
+                android:id="@+id/info_content"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:text="@string/ad_content"
-                android:textSize="24sp" />
+                android:text="@string/info_content"
+                android:textSize="12sp" />
         </LinearLayout>
     </FrameLayout>
 

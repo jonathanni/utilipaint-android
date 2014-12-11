@@ -11,37 +11,49 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.widget.TextView;
 
-public class UpdateAsyncTask extends TimerTask {
+public class UpdateAsyncTask extends TimerTask
+{
 
 	private Activity activity;
 	private PaintGLSurfaceView glsv;
 	private MemoryInfo mi = new MemoryInfo();
 	private ActivityManager activityManager;
+	private TextView bottom;
 
-	public UpdateAsyncTask(Activity activity) {
+	public UpdateAsyncTask(Activity activity)
+	{
 		this.activity = activity;
 		glsv = (PaintGLSurfaceView) activity.findViewById(R.id.graphics_view);
 
 		activityManager = (ActivityManager) activity
 				.getSystemService(Activity.ACTIVITY_SERVICE);
 		activityManager.getMemoryInfo(mi);
+		bottom = (TextView) activity.findViewById(R.id.info_content);
 	}
 
 	@Override
-	public void run() {
+	public void run()
+	{
 		final long MEM = this.getAvailableMemory();
 
-		activity.runOnUiThread(new Runnable() {
+		activity.runOnUiThread(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				// Update zoom info
-				activity.setTitle(activity.getString(R.string.app_name)
-						+ " "
+				bottom.setText(""
 						+ DecimalFormat.getPercentInstance(Locale.getDefault())
-								.format(glsv.getPSInfo()[4]) + " " + MEM
+								.format(glsv.getPSInfo()[4])
+						+ " "
+						+ DecimalFormat.getNumberInstance(Locale.getDefault())
+								.format(MEM)
 						+ " bytes free "
-						+ (int) (1000. / glsv.getRenderer().getFrameTime()) + " fps");
+						+ DecimalFormat.getNumberInstance(Locale.getDefault())
+								.format((int) (1000. / glsv.getRenderer()
+										.getFrameTime())) + " fps");
 			}
 		});
 
@@ -56,7 +68,8 @@ public class UpdateAsyncTask extends TimerTask {
 		// BitmapFactory.decodeResource(res, R.drawable.test, op));
 	}
 
-	public long getAvailableMemory() {
+	public long getAvailableMemory()
+	{
 		activityManager.getMemoryInfo(mi);
 		return mi.availMem;
 	}

@@ -20,7 +20,7 @@
     <string name="dialog_exit_message">Are you sure you want to quit? The current image will be destroyed.</string>
     <string name="dialog_exit_title">Confirmation</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
-    <string name="ad_content">Placeholder Ad Content</string>
+    <string name="info_content">Program Info</string>
     <string name="button_ok">OK</string>
     <string name="button_cancel">Cancel</string>
 
