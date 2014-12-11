@@ -66,6 +66,28 @@ public class PaintCache {
 		return buffer;
 	}
 
+	public Bitmap getBitmap(int x, int y, int width, int height, float scale) {
+
+		int space = scale <= 1 ? 1 : (int) Math.floor(scale);
+		int[] buf = new int[4 * (width / space) * (height / space)];
+
+		for (int row = 0; row < height; row += space) {
+			byte[] temp = new byte[4 * width];
+			buffer.get(temp, 4 * ((row + y) * WIDTH + x), 4 * width);
+			for (int col = 0; col < width; col += space) {
+				int index = (row / space) * (width / space) + col / space;
+
+				buf[4 * index] = 0xff & temp[4 * col];
+				buf[4 * index + 1] = 0xff & temp[4 * col + 1];
+				buf[4 * index + 2] = 0xff & temp[4 * col + 2];
+				buf[4 * index + 3] = 0xff & temp[4 * col + 3];
+			}
+		}
+
+		return Bitmap.createBitmap(buf, width / space, height / space,
+				Bitmap.Config.ARGB_8888);
+	}
+
 	public boolean getSuccess() {
 		return success;
 	}
