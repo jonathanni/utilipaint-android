@@ -1,6 +1,7 @@
 package com.bytecascade.utilipaint;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
 import java.text.DecimalFormat;
@@ -86,7 +87,19 @@ public class PaintActivity extends MenuActivity implements
 		Timer update = new Timer();
 
 		update.schedule(task = new UpdateAsyncTask(this), 0, 200);
-		
+
+		try {
+			File testFile = File.createTempFile("testIMG", ".png");
+			FileOutputStream testOut = new FileOutputStream(testFile);
+			test.compress(Bitmap.CompressFormat.PNG, 100, testOut);
+			testOut.flush();
+			testOut.close();
+
+			cache = new PaintCache(this, testFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 		// Renderer is actually created here
 		glsv.setImage(test);
 	}
@@ -109,7 +122,8 @@ public class PaintActivity extends MenuActivity implements
 	protected void onDestroy() {
 		super.onDestroy();
 		try {
-			cache.close();
+			if (cache != null)
+				cache.close();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

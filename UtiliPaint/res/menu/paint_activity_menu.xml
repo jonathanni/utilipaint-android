@@ -1,6 +1,11 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
 
     <item
+        android:id="@+id/action_tool_select"
+        android:showAsAction="ifRoom"
+        android:actionLayout="@layout/action_tool_select"  />
+    
+    <item
         android:id="@+id/action_file"
         android:orderInCategory="100"
         android:showAsAction="ifRoom"
