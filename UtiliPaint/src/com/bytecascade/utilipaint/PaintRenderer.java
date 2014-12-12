@@ -20,17 +20,20 @@ public class PaintRenderer implements Renderer {
 	private Context context;
 	private Bitmap rawImage;
 
-	private int width, height;
+	private int width, height, iwidth, iheight;
 
 	private PaintGLSurfaceView surfaceView;
 
 	private long startTime, endTime, dt;
 
 	public PaintRenderer(Context context, Bitmap image,
-			PaintGLSurfaceView glSurfaceView) {
+			PaintGLSurfaceView glSurfaceView, int iwidth, int iheight) {
 		this.context = context;
 		this.rawImage = image;
 		this.surfaceView = glSurfaceView;
+
+		this.iwidth = iwidth;
+		this.iheight = iheight;
 
 		startTime = System.currentTimeMillis();
 	}
@@ -38,10 +41,8 @@ public class PaintRenderer implements Renderer {
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
 		// Set the background frame color
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		this.image = new PaintImage(context, rawImage, surfaceView);
-
-		this.image.setWidth(rawImage.getWidth());
-		this.image.setHeight(rawImage.getHeight());
+		this.image = new PaintImage(context, rawImage, surfaceView,
+				this.iwidth, this.iheight);
 	}
 
 	public void onDrawFrame(GL10 unused) {
@@ -61,7 +62,6 @@ public class PaintRenderer implements Renderer {
 		float[] transforms = surfaceView.getPSInfo();
 
 		final float SCALE = 1 / transforms[4];
-		float iwidth = this.image.getWidth(), iheight = this.image.getHeight();
 
 		Matrix.setLookAtM(vMatrix, 0, iwidth / 2 - transforms[2], iheight / 2
 				+ transforms[3], 1, iwidth / 2 - transforms[2], iheight / 2
@@ -77,18 +77,11 @@ public class PaintRenderer implements Renderer {
 	public void onSurfaceChanged(GL10 unused, int width, int height) {
 		GLES20.glViewport(0, 0, width, height);
 
-		float ratio = (float) width / height;
-
 		this.width = width;
 		this.height = height;
 
 		Log.d("com.bytecascade.utilipaint", "Create Surface w: " + width
 				+ " h: " + height);
-
-		// This Projection Matrix is applied to object coordinates in the
-		// onDrawFrame() method
-
-		// Matrix.frustumM(projMatrix, 0, -ratio, ratio, -1, 1, 0.1f, 128);
 	}
 
 	public static int loadShader(int type, String shaderCode) {

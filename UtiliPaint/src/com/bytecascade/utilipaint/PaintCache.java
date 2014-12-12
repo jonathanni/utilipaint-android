@@ -12,6 +12,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
 import android.graphics.Rect;
+import android.util.Log;
 
 public class PaintCache {
 
@@ -59,6 +60,8 @@ public class PaintCache {
 			channel.lock();
 			buffer = channel.map(FileChannel.MapMode.READ_WRITE, 0,
 					this.file.length());
+			Log.d("com.bytecascade.utilipaint", "Buffer size: " + WIDTH
+					* HEIGHT + " " + this.file.length());
 		}
 	}
 

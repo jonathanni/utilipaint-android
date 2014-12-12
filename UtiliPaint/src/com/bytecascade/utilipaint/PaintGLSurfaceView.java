@@ -40,8 +40,8 @@ public class PaintGLSurfaceView extends GLSurfaceView {
 		scaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 	}
 
-	public void setImage(Bitmap image) {
-		setRenderer(renderer = new PaintRenderer(context, image, this));
+	public void setImage(Bitmap image, int fullWidth, int fullHeight) {
+		setRenderer(renderer = new PaintRenderer(context, image, this, fullWidth, fullHeight));
 	}
 
 	public PaintRenderer getRenderer() {

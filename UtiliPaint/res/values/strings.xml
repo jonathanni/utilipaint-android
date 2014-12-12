@@ -13,6 +13,7 @@
     <string name="action_help">Help</string>
     <string name="action_about">About</string>
     <string name="action_save_as">Save As…</string>
+    <string name="action_tool_select">Select Tool…</string>
     <string name="dialog_about_message">Placeholder Text</string>
     <string name="dialog_about_title">About UtiliPaint</string>
     <string name="dialog_new_message">Are you sure you want to create a new image? The current one will be destroyed.</string>

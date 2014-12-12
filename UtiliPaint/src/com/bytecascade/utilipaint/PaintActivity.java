@@ -91,7 +91,7 @@ public class PaintActivity extends MenuActivity implements
 		try {
 			File testFile = File.createTempFile("testIMG", ".png");
 			FileOutputStream testOut = new FileOutputStream(testFile);
-			test.compress(Bitmap.CompressFormat.PNG, 100, testOut);
+			System.out.println(test.compress(Bitmap.CompressFormat.PNG, 100, testOut));
 			testOut.flush();
 			testOut.close();
 
@@ -101,7 +101,7 @@ public class PaintActivity extends MenuActivity implements
 		}
 
 		// Renderer is actually created here
-		glsv.setImage(test);
+		glsv.setImage(test, test.getWidth(), test.getHeight());
 	}
 
 	File testFile;
@@ -191,5 +191,9 @@ public class PaintActivity extends MenuActivity implements
 
 	public long getAvailableMemory() {
 		return task.getAvailableMemory();
+	}
+
+	public PaintCache getCache() {
+		return cache;
 	}
 }

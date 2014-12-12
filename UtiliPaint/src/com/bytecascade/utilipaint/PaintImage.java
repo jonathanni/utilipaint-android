@@ -65,9 +65,10 @@ public class PaintImage {
 	private PaintGLSurfaceView surfaceView;
 
 	private float width, height;
+	private int fullWidth, fullHeight;
 
 	public PaintImage(final Context activityContext, Bitmap image,
-			PaintGLSurfaceView glSurfaceView) {
+			PaintGLSurfaceView glSurfaceView, int fwidth, int fheight) {
 		this.activityContext = activityContext;
 
 		ByteBuffer bb = ByteBuffer.allocateDirect(imageCoords.length * 4);
@@ -103,6 +104,9 @@ public class PaintImage {
 		textureDataHandle = loadTexture(activityContext, image);
 
 		surfaceView = glSurfaceView;
+
+		this.width = image.getWidth();
+		this.height = image.getHeight();
 	}
 
 	public void draw(float[] MVPMatrix) {
@@ -121,25 +125,25 @@ public class PaintImage {
 				* surfaceView.getWidth() / 2), VIEWPORT_HH = (int) ((1.0f / psData[4])
 				* surfaceView.getHeight() / 2);
 
-		imageCoords[0] = Math.max(0, (float) width / 2 - psData[2]
+		imageCoords[0] = Math.max(0, (float) fullWidth / 2 - psData[2]
 				- VIEWPORT_HW);
-		imageCoords[1] = Math.min(height, (float) height / 2 + psData[3]
-				+ VIEWPORT_HH);
+		imageCoords[1] = Math.min(fullHeight, (float) fullHeight / 2
+				+ psData[3] + VIEWPORT_HH);
 
-		imageCoords[2] = Math.max(0, (float) width / 2 - psData[2]
+		imageCoords[2] = Math.max(0, (float) fullWidth / 2 - psData[2]
 				- VIEWPORT_HW);
-		imageCoords[3] = Math.max(0, (float) height / 2 + psData[3]
+		imageCoords[3] = Math.max(0, (float) fullHeight / 2 + psData[3]
 				- VIEWPORT_HH);
 
-		imageCoords[4] = Math.min(width, (float) width / 2 - psData[2]
+		imageCoords[4] = Math.min(fullWidth, (float) fullWidth / 2 - psData[2]
 				+ VIEWPORT_HW);
-		imageCoords[5] = Math.max(0, (float) height / 2 + psData[3]
+		imageCoords[5] = Math.max(0, (float) fullHeight / 2 + psData[3]
 				- VIEWPORT_HH);
 
-		imageCoords[6] = Math.min(width, (float) width / 2 - psData[2]
+		imageCoords[6] = Math.min(fullWidth, (float) fullWidth / 2 - psData[2]
 				+ VIEWPORT_HW);
-		imageCoords[7] = Math.min(height, (float) height / 2 + psData[3]
-				+ VIEWPORT_HH);
+		imageCoords[7] = Math.min(fullHeight, (float) fullHeight / 2
+				+ psData[3] + VIEWPORT_HH);
 
 		// Positioning
 		vertexBuffer.put(imageCoords);

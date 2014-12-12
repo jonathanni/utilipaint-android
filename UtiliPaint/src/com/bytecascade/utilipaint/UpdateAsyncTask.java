@@ -13,8 +13,7 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.widget.TextView;
 
-public class UpdateAsyncTask extends TimerTask
-{
+public class UpdateAsyncTask extends TimerTask {
 
 	private Activity activity;
 	private PaintGLSurfaceView glsv;
@@ -22,8 +21,7 @@ public class UpdateAsyncTask extends TimerTask
 	private ActivityManager activityManager;
 	private TextView bottom;
 
-	public UpdateAsyncTask(Activity activity)
-	{
+	public UpdateAsyncTask(Activity activity) {
 		this.activity = activity;
 		glsv = (PaintGLSurfaceView) activity.findViewById(R.id.graphics_view);
 
@@ -34,15 +32,12 @@ public class UpdateAsyncTask extends TimerTask
 	}
 
 	@Override
-	public void run()
-	{
+	public void run() {
 		final long MEM = this.getAvailableMemory();
 
-		activity.runOnUiThread(new Runnable()
-		{
+		activity.runOnUiThread(new Runnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				// Update zoom info
 				bottom.setText(""
 						+ DecimalFormat.getPercentInstance(Locale.getDefault())
@@ -57,19 +52,14 @@ public class UpdateAsyncTask extends TimerTask
 			}
 		});
 
-		// TODO fix scaling
+		int cx = 0, cy = 0, rx = 1, ry = 1;
 
-		// final BitmapFactory.Options op = new BitmapFactory.Options();
-		// op.inSampleSize = (int) Math.round(1.0 / glsv.getPSInfo()[4]);
-
-		// final Resources res = activity.getResources();
-
-		// PaintImage.loadTexture(activity,
-		// BitmapFactory.decodeResource(res, R.drawable.test, op));
+		if (((PaintActivity) activity).getCache() != null)
+			((PaintActivity) activity).getCache().getBitmap(cx - rx / 2,
+					cy - ry / 2, rx, ry, glsv.getPSInfo()[4]);
 	}
 
-	public long getAvailableMemory()
-	{
+	public long getAvailableMemory() {
 		activityManager.getMemoryInfo(mi);
 		return mi.availMem;
 	}
