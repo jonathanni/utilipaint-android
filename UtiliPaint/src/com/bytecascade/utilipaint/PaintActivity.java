@@ -25,7 +25,8 @@ import android.view.WindowManager;
 import android.widget.PopupMenu;
 
 public class PaintActivity extends MenuActivity implements
-		PopupMenu.OnMenuItemClickListener, Serializable {
+		PopupMenu.OnMenuItemClickListener, Serializable
+{
 
 	/**
 	 * 
@@ -41,17 +42,20 @@ public class PaintActivity extends MenuActivity implements
 	private PaintCache cache;
 
 	@Override
-	public void onSaveInstanceState(Bundle frozenState) {
+	public void onSaveInstanceState(Bundle frozenState)
+	{
 		// etc. until you have everything important stored in the bundle
 	}
 
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	public void onRestoreInstanceState(Bundle savedInstanceState)
+	{
 		// Always call the superclass so it can restore the view hierarchy
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 
 	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
+	public boolean onCreateOptionsMenu(Menu menu)
+	{
 		// Inflate the menu; this adds items to the action bar if it is present.
 		this.getMenuInflater().inflate(R.menu.paint_activity_menu, menu);
 
@@ -62,7 +66,8 @@ public class PaintActivity extends MenuActivity implements
 	}
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState)
+	{
 		super.onCreate(savedInstanceState);
 
 		isRunning = true;
@@ -88,15 +93,18 @@ public class PaintActivity extends MenuActivity implements
 
 		update.schedule(task = new UpdateAsyncTask(this), 0, 200);
 
-		try {
-			File testFile = File.createTempFile("testIMG", ".png");
+		try
+		{
+			File testFile = File.createTempFile("testIMG", ".png",
+					this.getCacheDir());
 			FileOutputStream testOut = new FileOutputStream(testFile);
-			System.out.println(test.compress(Bitmap.CompressFormat.PNG, 100, testOut));
+			test.compress(Bitmap.CompressFormat.PNG, 100, testOut);
 			testOut.flush();
 			testOut.close();
 
 			cache = new PaintCache(this, testFile);
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			e.printStackTrace();
 		}
 
@@ -107,33 +115,40 @@ public class PaintActivity extends MenuActivity implements
 	File testFile;
 
 	@Override
-	protected void onStart() {
+	protected void onStart()
+	{
 		super.onStart();
 		isRunning = true;
 	}
 
 	@Override
-	protected void onStop() {
+	protected void onStop()
+	{
 		super.onStop();
 		isRunning = false;
 	}
 
 	@Override
-	protected void onDestroy() {
+	protected void onDestroy()
+	{
 		super.onDestroy();
-		try {
+		try
+		{
 			if (cache != null)
 				cache.close();
-		} catch (IOException e) {
+		} catch (IOException e)
+		{
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
+	public boolean onOptionsItemSelected(MenuItem item)
+	{
 		int id = item.getItemId();
 
-		switch (id) {
+		switch (id)
+		{
 		case R.id.action_file:
 		case R.id.action_help:
 			showPopup(this, findViewById(id), true);
@@ -144,21 +159,27 @@ public class PaintActivity extends MenuActivity implements
 	}
 
 	@Override
-	public boolean onMenuItemClick(MenuItem item) {
+	public boolean onMenuItemClick(MenuItem item)
+	{
 		int id = item.getItemId();
 
-		switch (id) {
+		switch (id)
+		{
 		case R.id.action_new:
 			getButtonDialogBox(
 					getDialogBox(R.string.dialog_new_title,
 							R.string.dialog_new_message), R.string.button_ok,
 					R.string.button_cancel,
-					new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
+					new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int id)
+						{
 							setDialogResult(1);
 						}
-					}, new DialogInterface.OnClickListener() {
-						public void onClick(DialogInterface dialog, int id) {
+					}, new DialogInterface.OnClickListener()
+					{
+						public void onClick(DialogInterface dialog, int id)
+						{
 							setDialogResult(0);
 						}
 					}).show();
@@ -185,15 +206,18 @@ public class PaintActivity extends MenuActivity implements
 		return false;
 	}
 
-	protected void setDialogResult(int selection) {
+	protected void setDialogResult(int selection)
+	{
 		dialogResult = selection;
 	}
 
-	public long getAvailableMemory() {
+	public long getAvailableMemory()
+	{
 		return task.getAvailableMemory();
 	}
 
-	public PaintCache getCache() {
+	public PaintCache getCache()
+	{
 		return cache;
 	}
 }
