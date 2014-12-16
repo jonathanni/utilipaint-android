@@ -127,7 +127,7 @@ public class PaintImage
 		final int VIEWPORT_HW = (int) ((1.0f / psData[4])
 				* surfaceView.getWidth() / 2), VIEWPORT_HH = (int) ((1.0f / psData[4])
 				* surfaceView.getHeight() / 2);
-/*
+
 		imageCoords[0] = Math.max(0, (float) fullWidth / 2 - psData[2]
 				- VIEWPORT_HW);
 		imageCoords[1] = Math.min(fullHeight, (float) fullHeight / 2
@@ -146,9 +146,7 @@ public class PaintImage
 		imageCoords[6] = Math.min(fullWidth, (float) fullWidth / 2 - psData[2]
 				+ VIEWPORT_HW);
 		imageCoords[7] = Math.min(fullHeight, (float) fullHeight / 2
-				+ psData[3] + VIEWPORT_HH);*/
-		
-		imageCoords = new float[]{0,333,0,0,999,0,999,333};
+				+ psData[3] + VIEWPORT_HH);
 
 		// Positioning
 		vertexBuffer.put(imageCoords);

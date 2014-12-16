@@ -12,10 +12,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.BitmapRegionDecoder;
 import android.graphics.Rect;
-import android.util.Log;
 
-public class PaintCache
-{
+public class PaintCache {
 
 	private RandomAccessFile file;
 	private File cacheFile;
@@ -25,8 +23,7 @@ public class PaintCache
 
 	private boolean success;
 
-	public PaintCache(Context context, File file) throws IOException
-	{
+	public PaintCache(Context context, File file) throws IOException {
 		cacheFile = File.createTempFile("layer00", null, context.getCacheDir());
 		this.file = new RandomAccessFile(cacheFile, "rw");
 
@@ -41,13 +38,11 @@ public class PaintCache
 		options.inPreferQualityOverSpeed = true;
 		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-		if (WIDTH * 4 + 1024 < ((PaintActivity) context).getAvailableMemory())
-		{
+		if (WIDTH * 4 + 1024 < ((PaintActivity) context).getAvailableMemory()) {
 			BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(
 					file.getAbsolutePath(), true);
 
-			for (int i = 0; i < HEIGHT; i++)
-			{
+			for (int i = 0; i < HEIGHT; i++) {
 				Bitmap slice = decoder.decodeRegion(
 						new Rect(0, i, WIDTH, i + 1), options);
 				ByteBuffer tempBuffer = ByteBuffer.allocate(WIDTH * 4);
@@ -64,26 +59,24 @@ public class PaintCache
 		}
 	}
 
-	public MappedByteBuffer getBuffer()
-	{
+	public MappedByteBuffer getBuffer() {
 		return buffer;
 	}
 
-	public Bitmap getBitmap(int x, int y, int width, int height, float scale)
-	{
-		int space = scale >= 1 ? 1 : (int) Math.floor(1 / scale);
-		int[] buf = new int[4 * (width / space) * (height / space)];
+	public Bitmap getBitmap(int x1, int y1, int x2, int y2, float scale) {
+		final int SPACE = scale >= 1 ? 1 : (int) Math.floor(1 / scale);
+		final int WIDTH = x2 - x1 + 1, HEIGHT = y2 - y1 + 1;
+		int[] buf = new int[(int) (4 * Math.ceil((float) WIDTH / SPACE) * Math
+				.ceil((float) HEIGHT / SPACE))];
 
-		for (int row = 0; row < height; row += space)
-		{
-			byte[] temp = new byte[4 * width];
+		for (int row = 0; row < HEIGHT; row += SPACE) {
+			byte[] temp = new byte[4 * WIDTH];
 
-			buffer.position(4 * ((row + y) * WIDTH + x));
-			buffer.get(temp, 0, 4 * width);
+			buffer.position(4 * ((row + y1) * WIDTH + x1));
+			buffer.get(temp, 0, 4 * WIDTH);
 
-			for (int col = 0; col < width; col += space)
-			{
-				int index = (row / space) * (width / space) + col / space;
+			for (int col = 0; col < WIDTH; col += SPACE) {
+				int index = (row / SPACE) * (WIDTH / SPACE) + col / SPACE;
 
 				buf[4 * index] = 0xff & temp[4 * col];
 				buf[4 * index + 1] = 0xff & temp[4 * col + 1];
@@ -92,17 +85,16 @@ public class PaintCache
 			}
 		}
 
-		return Bitmap.createBitmap(buf, width / space, height / space,
+		return Bitmap.createBitmap(buf, (int) Math.ceil((float) WIDTH / SPACE),
+				(int) Math.ceil((float) HEIGHT / SPACE),
 				Bitmap.Config.ARGB_8888);
 	}
 
-	public boolean isSuccessful()
-	{
+	public boolean isSuccessful() {
 		return success;
 	}
 
-	public void close() throws IOException
-	{
+	public void close() throws IOException {
 		channel.close();
 		this.file.close();
 		cacheFile.delete();

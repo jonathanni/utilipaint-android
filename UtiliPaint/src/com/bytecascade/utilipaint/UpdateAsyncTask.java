@@ -13,8 +13,7 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.widget.TextView;
 
-public class UpdateAsyncTask extends TimerTask
-{
+public class UpdateAsyncTask extends TimerTask {
 
 	private Activity activity;
 	private PaintGLSurfaceView glsv;
@@ -23,8 +22,7 @@ public class UpdateAsyncTask extends TimerTask
 	private TextView bottom;
 	private boolean first = true;
 
-	public UpdateAsyncTask(Activity activity)
-	{
+	public UpdateAsyncTask(Activity activity) {
 		this.activity = activity;
 		glsv = (PaintGLSurfaceView) activity.findViewById(R.id.graphics_view);
 
@@ -35,15 +33,12 @@ public class UpdateAsyncTask extends TimerTask
 	}
 
 	@Override
-	public void run()
-	{
+	public void run() {
 		final long MEM = this.getAvailableMemory();
 
-		activity.runOnUiThread(new Runnable()
-		{
+		activity.runOnUiThread(new Runnable() {
 			@Override
-			public void run()
-			{
+			public void run() {
 				// Update zoom info
 				bottom.setText(""
 						+ DecimalFormat.getPercentInstance(Locale.getDefault())
@@ -58,19 +53,24 @@ public class UpdateAsyncTask extends TimerTask
 			}
 		});
 
-		int cx = 0, cy = 0, rx = 1, ry = 1;
+		float[] info = glsv.getPSInfo();
+
+		int cx = (int) (info[2]), cy = (int) info[3], w = (int) ((1.0f / info[4]) * glsv
+				.getWidth()), h = (int) ((1.0f / info[4]) * glsv.getHeight());
+
+		// TODO change to x1,y1,x2,y2
 		if (((PaintActivity) activity).getCache() != null
-				&& ((PaintActivity) activity).getCache().isSuccessful())
-		{
+				&& ((PaintActivity) activity).getCache().isSuccessful()) {
 			if (first)
 				PaintImage.deleteTexture();
-			PaintImage.loadTexture(activity, ((PaintActivity) activity)
-					.getCache().getBitmap(0, 0, 999, 333, glsv.getPSInfo()[4]));
+			PaintImage.loadTexture(
+					activity,
+					((PaintActivity) activity).getCache().getBitmap(cx - w / 2,
+							cy - h / 2, w, h, glsv.getPSInfo()[4]));
 		}
 	}
 
-	public long getAvailableMemory()
-	{
+	public long getAvailableMemory() {
 		activityManager.getMemoryInfo(mi);
 		return mi.availMem;
 	}

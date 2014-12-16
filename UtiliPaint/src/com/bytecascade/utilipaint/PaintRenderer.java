@@ -108,6 +108,14 @@ public class PaintRenderer implements Renderer {
 		return height;
 	}
 
+	public int getImageWidth() {
+		return iwidth;
+	}
+
+	public int getImageHeight() {
+		return iheight;
+	}
+
 	public long getFrameTime() {
 		return dt;
 	}
