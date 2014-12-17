@@ -65,10 +65,12 @@ public class PaintCache {
 
 	public Bitmap getBitmap(int x1, int y1, int x2, int y2, float scale) {
 		final int SPACE = scale >= 1 ? 1 : (int) Math.floor(1 / scale);
-		final int WIDTH = x2 - x1 + 1, HEIGHT = y2 - y1 + 1;
+		final int WIDTH = x2 - x1, HEIGHT = y2 - y1;
 		int[] buf = new int[(int) (4 * Math.ceil((float) WIDTH / SPACE) * Math
 				.ceil((float) HEIGHT / SPACE))];
 
+		System.err.println(WIDTH + "x" + HEIGHT);
+		
 		for (int row = 0; row < HEIGHT; row += SPACE) {
 			byte[] temp = new byte[4 * WIDTH];
 

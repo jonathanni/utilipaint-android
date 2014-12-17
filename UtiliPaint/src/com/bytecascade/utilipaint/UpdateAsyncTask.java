@@ -40,33 +40,47 @@ public class UpdateAsyncTask extends TimerTask {
 			@Override
 			public void run() {
 				// Update zoom info
-				bottom.setText(""
-						+ DecimalFormat.getPercentInstance(Locale.getDefault())
-								.format(glsv.getPSInfo()[4])
-						+ " "
-						+ DecimalFormat.getNumberInstance(Locale.getDefault())
-								.format(MEM)
-						+ " bytes free "
-						+ DecimalFormat.getNumberInstance(Locale.getDefault())
-								.format((int) (1000. / glsv.getRenderer()
-										.getFrameTime())) + " fps");
+
+				bottom.setText(String.format(
+						"%s %s bytes free %s fps x: %.2f y: %.2f",
+						DecimalFormat.getPercentInstance(Locale.getDefault())
+								.format(glsv.getPSInfo()[4]),
+						DecimalFormat.getNumberInstance(Locale.getDefault())
+								.format(MEM),
+						DecimalFormat.getNumberInstance(Locale.getDefault())
+								.format((int) (1000.0 / glsv.getRenderer()
+										.getFrameTime())), -glsv.getPSInfo()[2]
+								+ (float) glsv.getRenderer().getImageWidth()
+								/ 2, glsv.getPSInfo()[3]
+								+ (float) glsv.getRenderer().getImageHeight()
+								/ 2));
 			}
 		});
 
+		if (glsv.getRenderer() == null || glsv.getWidth() == 0 || glsv.getHeight() == 0)
+			return;
+
 		float[] info = glsv.getPSInfo();
 
-		int cx = (int) (info[2]), cy = (int) info[3], w = (int) ((1.0f / info[4]) * glsv
+		int cx = (int) (-info[2] + glsv.getRenderer().getImageWidth() / 2), cy = (int) (info[3] + glsv
+				.getRenderer().getImageHeight() / 2), w = (int) ((1.0f / info[4]) * glsv
 				.getWidth()), h = (int) ((1.0f / info[4]) * glsv.getHeight());
 
-		// TODO change to x1,y1,x2,y2
+		System.err.printf("%d %d %d %d\n", cx, cy, w, h);
+
 		if (((PaintActivity) activity).getCache() != null
 				&& ((PaintActivity) activity).getCache().isSuccessful()) {
 			if (first)
 				PaintImage.deleteTexture();
 			PaintImage.loadTexture(
 					activity,
-					((PaintActivity) activity).getCache().getBitmap(cx - w / 2,
-							cy - h / 2, w, h, glsv.getPSInfo()[4]));
+					((PaintActivity) activity).getCache().getBitmap(
+							Math.max(0, cx - w / 2),
+							Math.max(0, cy - h / 2),
+							Math.min(glsv.getRenderer().getImageWidth(), cx
+									+ (w - w / 2)),
+							Math.min(glsv.getRenderer().getImageHeight(), cy
+									+ (h - h / 2)), glsv.getPSInfo()[4]));
 		}
 	}
 
