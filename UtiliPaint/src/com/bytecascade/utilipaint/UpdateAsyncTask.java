@@ -21,6 +21,7 @@ public class UpdateAsyncTask extends TimerTask {
 	private ActivityManager activityManager;
 	private TextView bottom;
 	private boolean first = true;
+	public volatile boolean isRunning;
 
 	public UpdateAsyncTask(Activity activity) {
 		this.activity = activity;
@@ -30,10 +31,15 @@ public class UpdateAsyncTask extends TimerTask {
 				.getSystemService(Activity.ACTIVITY_SERVICE);
 		activityManager.getMemoryInfo(mi);
 		bottom = (TextView) activity.findViewById(R.id.info_content);
+
+		isRunning = true;
 	}
 
 	@Override
 	public void run() {
+		if (!isRunning)
+			return;
+
 		final long MEM = this.getAvailableMemory();
 
 		activity.runOnUiThread(new Runnable() {
@@ -57,7 +63,8 @@ public class UpdateAsyncTask extends TimerTask {
 			}
 		});
 
-		if (glsv.getRenderer() == null || glsv.getWidth() == 0 || glsv.getHeight() == 0)
+		if (glsv.getRenderer() == null || glsv.getWidth() == 0
+				|| glsv.getHeight() == 0)
 			return;
 
 		float[] info = glsv.getPSInfo();
@@ -66,12 +73,12 @@ public class UpdateAsyncTask extends TimerTask {
 				.getRenderer().getImageHeight() / 2), w = (int) ((1.0f / info[4]) * glsv
 				.getWidth()), h = (int) ((1.0f / info[4]) * glsv.getHeight());
 
-		System.err.printf("%d %d %d %d\n", cx, cy, w, h);
-
+		System.out.printf("%d %d %d %d", cx, cy, w, h);
+		
 		if (((PaintActivity) activity).getCache() != null
 				&& ((PaintActivity) activity).getCache().isSuccessful()) {
-			if (first)
-				PaintImage.deleteTexture();
+			//if (first)
+			//	PaintImage.deleteTexture();
 			PaintImage.loadTexture(
 					activity,
 					((PaintActivity) activity).getCache().getBitmap(
