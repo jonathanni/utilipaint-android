@@ -103,19 +103,6 @@ public class UpdateAsyncTask extends TimerTask
 													.getImageHeight() - cy)
 													+ (h - h / 2)),
 									glsv.getPSInfo()[4]));
-					// PaintImage.loadTexture(
-					// activity,
-					// ((PaintActivity) activity).getCache()
-					// .getBitmap(
-					// Math.max(0, cx - w / 2),
-					// Math.max(0, cy - h / 2),
-					// Math.min(glsv.getRenderer()
-					// .getImageWidth(), cx
-					// + (w - w / 2)),
-					// Math.min(glsv.getRenderer()
-					// .getImageHeight(), cy
-					// + (h - h / 2)),
-					// glsv.getPSInfo()[4]));
 				}
 			});
 		}

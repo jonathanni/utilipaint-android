@@ -60,10 +60,6 @@ public class PaintActivity extends MenuActivity implements
 		for (int i = 0; i < menu.size(); i++)
 			menu.getItem(i).setVisible(true);
 
-		Spinner spinner = (Spinner) findViewById(R.id.action_tool_select);
-		spinner.setAdapter(new IconAdapter(this, R.layout.row, IconAdapter
-				.getStrings()));
-
 		return super.onCreateOptionsMenu(menu);
 	}
 
@@ -75,6 +71,10 @@ public class PaintActivity extends MenuActivity implements
 		isRunning = true;
 
 		this.setContentView(R.layout.activity_action_paint);
+		
+		Spinner spinner = (Spinner) this.getLayoutInflater().inflate(R.layout.action_tool_select, null);
+		spinner.setAdapter(new IconAdapter(this, R.layout.row, IconAdapter
+				.getStrings()));
 
 		WindowManager.LayoutParams attrs = this.getWindow().getAttributes();
 		attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
