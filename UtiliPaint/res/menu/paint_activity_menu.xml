@@ -2,10 +2,10 @@
 
     <item
         android:id="@+id/action_tool_select"
-        android:showAsAction="ifRoom"
         android:actionLayout="@layout/action_tool_select"
-        android:title="@string/action_tool_select"  />
-    
+        android:showAsAction="ifRoom"
+        android:title="@string/action_tool_select"
+        android:visible="false"/>
     <item
         android:id="@+id/action_file"
         android:orderInCategory="100"

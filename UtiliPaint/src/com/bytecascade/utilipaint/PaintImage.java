@@ -4,20 +4,17 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
-import java.text.DecimalFormat;
 import java.util.Arrays;
-import java.util.Locale;
 
-import com.example.utilipaint.R;
-
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.opengl.GLES20;
+import android.opengl.GLU;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-public class PaintImage {
+public class PaintImage
+{
 	private final Context activityContext;
 
 	private final FloatBuffer imageTextureCoordinates;
@@ -69,7 +66,8 @@ public class PaintImage {
 	private int fullWidth, fullHeight;
 
 	public PaintImage(final Context activityContext, Bitmap image,
-			PaintGLSurfaceView glSurfaceView, int fwidth, int fheight) {
+			PaintGLSurfaceView glSurfaceView, int fwidth, int fheight)
+	{
 		this.activityContext = activityContext;
 
 		ByteBuffer bb = ByteBuffer.allocateDirect(imageCoords.length * 4);
@@ -113,7 +111,8 @@ public class PaintImage {
 		this.fullHeight = fheight;
 	}
 
-	public void draw(float[] MVPMatrix) {
+	public void draw(float[] MVPMatrix)
+	{
 		// Texture and position scaling
 
 		final float[] psData = surfaceView.getPSInfo();
@@ -122,37 +121,30 @@ public class PaintImage {
 		// -0.5f, -0.5f // bottom left
 		// 0.5f, -0.5f // bottom right
 		// 0.5f, 0.5f // top right
-
-		// TODO modify viewport widths
-
+		
 		final int VIEWPORT_HW = (int) ((1.0f / psData[4])
 				* surfaceView.getWidth() / 2), VIEWPORT_HH = (int) ((1.0f / psData[4])
 				* surfaceView.getHeight() / 2);
 
-		imageCoords[0] = Math.max(0, (float) fullWidth / 2 - psData[2]
+		imageCoords[0] = Math.max(0, (float) fullWidth / 2 + psData[2]
 				- VIEWPORT_HW);
 		imageCoords[1] = Math.min(fullHeight, (float) fullHeight / 2
 				+ psData[3] + VIEWPORT_HH);
 
-		imageCoords[2] = Math.max(0, (float) fullWidth / 2 - psData[2]
+		imageCoords[2] = Math.max(0, (float) fullWidth / 2 + psData[2]
 				- VIEWPORT_HW);
 		imageCoords[3] = Math.max(0, (float) fullHeight / 2 + psData[3]
 				- VIEWPORT_HH);
 
-		imageCoords[4] = Math.min(fullWidth, (float) fullWidth / 2 - psData[2]
+		imageCoords[4] = Math.min(fullWidth, (float) fullWidth / 2 + psData[2]
 				+ VIEWPORT_HW);
 		imageCoords[5] = Math.max(0, (float) fullHeight / 2 + psData[3]
 				- VIEWPORT_HH);
 
-		imageCoords[6] = Math.min(fullWidth, (float) fullWidth / 2 - psData[2]
+		imageCoords[6] = Math.min(fullWidth, (float) fullWidth / 2 + psData[2]
 				+ VIEWPORT_HW);
 		imageCoords[7] = Math.min(fullHeight, (float) fullHeight / 2
 				+ psData[3] + VIEWPORT_HH);
-
-		// imageCoords = new float[]{0,333,0,0,999,0,999,333};
-
-		System.out.println(Arrays.toString(imageCoords) + " " + fullWidth + " "
-				+ fullHeight);
 
 		// Positioning
 		vertexBuffer.put(imageCoords);
@@ -200,40 +192,50 @@ public class PaintImage {
 		GLES20.glDisableVertexAttribArray(positionHandle);
 	}
 
-	public static void createTexture() {
+	public static void createTexture()
+	{
 		GLES20.glGenTextures(1, textureHandle, 0);
+		
+		// Bind to the texture in OpenGL
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+		
+		// Set filtering
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
+				GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
+				GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+		
+		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 
-	public static void deleteTexture() {
+	public static void deleteTexture()
+	{
 		GLES20.glDeleteTextures(1, textureHandle, 0);
-
-		GLES20.glFlush();
 	}
 
-	public static int loadTexture(final Context context, Bitmap image) {
-		Log.i("Load Texture ",
-				"Bitmap w: " + image.getWidth() + " h: " + image.getHeight());
+	public static int loadTexture(final Context context, Bitmap image)
+	{
+		if (textureHandle[0] != 0)
+		{
+			Log.i("Load Texture ", "Bitmap w: " + image.getWidth() + " h: "
+					+ image.getHeight() + " " + textureHandle[0]);
 
-		if (textureHandle[0] != 0) {
 			// Bind to the texture in OpenGL
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
 
-			// Set filtering
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
-					GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
-					GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-
 			// Load the bitmap into the bound texture.
 			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, image, 0);
-			
+
+			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
+
 			GLES20.glFlush();
 
 			// Recycle the bitmap, since its data has been loaded into OpenGL.
 			image.recycle();
 		}
 
-		if (textureHandle[0] == 0) {
+		if (textureHandle[0] == 0)
+		{
 			Log.e("GL ERROR: ", "ERR " + GLES20.glGetError());
 
 			throw new RuntimeException("Error loading texture.");
@@ -242,39 +244,48 @@ public class PaintImage {
 		return textureHandle[0];
 	}
 
-	public Bitmap getImage() {
+	public Bitmap getImage()
+	{
 		return image;
 	}
 
-	public float getWidth() {
+	public float getWidth()
+	{
 		return width;
 	}
 
-	public void setWidth(float width) {
+	public void setWidth(float width)
+	{
 		this.width = width;
 	}
 
-	public float getHeight() {
+	public float getHeight()
+	{
 		return height;
 	}
 
-	public void setHeight(float height) {
+	public void setHeight(float height)
+	{
 		this.height = height;
 	}
 
-	public int getFullWidth() {
+	public int getFullWidth()
+	{
 		return fullWidth;
 	}
 
-	public void setFullWidth(int fullWidth) {
+	public void setFullWidth(int fullWidth)
+	{
 		this.fullWidth = fullWidth;
 	}
 
-	public int getFullHeight() {
+	public int getFullHeight()
+	{
 		return fullHeight;
 	}
 
-	public void setFullHeight(int fullHeight) {
+	public void setFullHeight(int fullHeight)
+	{
 		this.fullHeight = fullHeight;
 	}
 }

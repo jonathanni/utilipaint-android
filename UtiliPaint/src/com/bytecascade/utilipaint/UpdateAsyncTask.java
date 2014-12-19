@@ -13,7 +13,8 @@ import android.content.res.Resources;
 import android.graphics.BitmapFactory;
 import android.widget.TextView;
 
-public class UpdateAsyncTask extends TimerTask {
+public class UpdateAsyncTask extends TimerTask
+{
 
 	private Activity activity;
 	private PaintGLSurfaceView glsv;
@@ -23,7 +24,8 @@ public class UpdateAsyncTask extends TimerTask {
 	private boolean first = true;
 	public volatile boolean isRunning;
 
-	public UpdateAsyncTask(Activity activity) {
+	public UpdateAsyncTask(Activity activity)
+	{
 		this.activity = activity;
 		glsv = (PaintGLSurfaceView) activity.findViewById(R.id.graphics_view);
 
@@ -36,15 +38,18 @@ public class UpdateAsyncTask extends TimerTask {
 	}
 
 	@Override
-	public void run() {
+	public void run()
+	{
 		if (!isRunning)
 			return;
 
 		final long MEM = this.getAvailableMemory();
 
-		activity.runOnUiThread(new Runnable() {
+		activity.runOnUiThread(new Runnable()
+		{
 			@Override
-			public void run() {
+			public void run()
+			{
 				// Update zoom info
 
 				bottom.setText(String.format(
@@ -55,7 +60,7 @@ public class UpdateAsyncTask extends TimerTask {
 								.format(MEM),
 						DecimalFormat.getNumberInstance(Locale.getDefault())
 								.format((int) (1000.0 / glsv.getRenderer()
-										.getFrameTime())), -glsv.getPSInfo()[2]
+										.getFrameTime())), glsv.getPSInfo()[2]
 								+ (float) glsv.getRenderer().getImageWidth()
 								/ 2, glsv.getPSInfo()[3]
 								+ (float) glsv.getRenderer().getImageHeight()
@@ -69,29 +74,55 @@ public class UpdateAsyncTask extends TimerTask {
 
 		float[] info = glsv.getPSInfo();
 
-		int cx = (int) (-info[2] + glsv.getRenderer().getImageWidth() / 2), cy = (int) (info[3] + glsv
+		final int cx = (int) (info[2] + glsv.getRenderer().getImageWidth() / 2), cy = (int) (info[3] + glsv
 				.getRenderer().getImageHeight() / 2), w = (int) ((1.0f / info[4]) * glsv
 				.getWidth()), h = (int) ((1.0f / info[4]) * glsv.getHeight());
 
-		System.out.printf("%d %d %d %d", cx, cy, w, h);
-		
 		if (((PaintActivity) activity).getCache() != null
-				&& ((PaintActivity) activity).getCache().isSuccessful()) {
-			//if (first)
-			//	PaintImage.deleteTexture();
-			PaintImage.loadTexture(
-					activity,
-					((PaintActivity) activity).getCache().getBitmap(
-							Math.max(0, cx - w / 2),
-							Math.max(0, cy - h / 2),
-							Math.min(glsv.getRenderer().getImageWidth(), cx
-									+ (w - w / 2)),
-							Math.min(glsv.getRenderer().getImageHeight(), cy
-									+ (h - h / 2)), glsv.getPSInfo()[4]));
+				&& ((PaintActivity) activity).getCache().isSuccessful())
+		{
+			// if (first)
+			// PaintImage.deleteTexture();
+			glsv.queueEvent(new Runnable()
+			{
+				@Override
+				public void run()
+				{
+					PaintImage.loadTexture(
+							activity,
+							((PaintActivity) activity).getCache().getBitmap(
+									Math.max(0, cx - w / 2),
+									Math.max(0, (glsv.getRenderer()
+											.getImageHeight() - cy) - h / 2),
+									Math.min(
+											glsv.getRenderer().getImageWidth(),
+											cx + (w - w / 2)),
+									Math.min(glsv.getRenderer()
+											.getImageHeight(),
+											(glsv.getRenderer()
+													.getImageHeight() - cy)
+													+ (h - h / 2)),
+									glsv.getPSInfo()[4]));
+					// PaintImage.loadTexture(
+					// activity,
+					// ((PaintActivity) activity).getCache()
+					// .getBitmap(
+					// Math.max(0, cx - w / 2),
+					// Math.max(0, cy - h / 2),
+					// Math.min(glsv.getRenderer()
+					// .getImageWidth(), cx
+					// + (w - w / 2)),
+					// Math.min(glsv.getRenderer()
+					// .getImageHeight(), cy
+					// + (h - h / 2)),
+					// glsv.getPSInfo()[4]));
+				}
+			});
 		}
 	}
 
-	public long getAvailableMemory() {
+	public long getAvailableMemory()
+	{
 		activityManager.getMemoryInfo(mi);
 		return mi.availMem;
 	}

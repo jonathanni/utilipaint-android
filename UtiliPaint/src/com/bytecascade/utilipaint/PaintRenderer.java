@@ -63,8 +63,8 @@ public class PaintRenderer implements Renderer {
 
 		final float SCALE = 1 / transforms[4];
 
-		Matrix.setLookAtM(vMatrix, 0, iwidth / 2 - transforms[2], iheight / 2
-				+ transforms[3], 1, iwidth / 2 - transforms[2], iheight / 2
+		Matrix.setLookAtM(vMatrix, 0, iwidth / 2 + transforms[2], iheight / 2
+				+ transforms[3], 1, iwidth / 2 + transforms[2], iheight / 2
 				+ transforms[3], 0, 0, 1, 0);
 		Matrix.orthoM(projMatrix, 0, SCALE * -width / 2, SCALE * width / 2,
 				SCALE * -height / 2, SCALE * height / 2, 0.1f, 2);
