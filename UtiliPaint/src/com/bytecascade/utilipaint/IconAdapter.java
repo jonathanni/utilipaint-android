@@ -15,8 +15,17 @@ public class IconAdapter extends ArrayAdapter<String>
 {
 	private Context context;
 
-	private static String[] strings = new String[] { "Pan/Zoom Tool" };
-	private static int[] images = new int[] { R.drawable.panzoom };
+	private static String[] strings;
+	private static int[] images;
+
+	static
+	{
+		for (int i = 0; i < PaintTool.values().length; i++)
+		{
+			strings[i] = PaintTool.values()[i].getName();
+			images[i] = PaintTool.values()[i].getResourceID();
+		}
+	}
 
 	public IconAdapter(Context context, int resource, String[] objects)
 	{

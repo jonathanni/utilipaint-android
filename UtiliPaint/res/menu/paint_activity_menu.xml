@@ -2,30 +2,30 @@
 
     <item
         android:id="@+id/action_tool_select"
-        android:actionLayout="@layout/action_tool_select"
-        android:showAsAction="ifRoom"
+        android:actionViewClass="android.widget.Spinner"
+        android:showAsAction="always"
         android:title="@string/action_tool_select"
         android:visible="false"/>
     <item
         android:id="@+id/action_file"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/action_file"/>
     <item
         android:id="@+id/action_edit"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/action_edit"
         android:visible="false"/>
     <item
         android:id="@+id/action_settings"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/action_settings"/>
     <item
         android:id="@+id/action_help"
         android:orderInCategory="100"
-        android:showAsAction="ifRoom"
+        android:showAsAction="always"
         android:title="@string/action_help"/>
 
 </menu>

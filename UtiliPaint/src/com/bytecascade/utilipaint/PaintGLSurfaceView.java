@@ -87,8 +87,8 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			totY = ptotY + tY * SCALE;
 
 			{
-				final float IWIDTH = renderer.getImage().getWidth(), IHEIGHT = renderer
-						.getImage().getHeight();
+				final float IWIDTH = renderer.getImageWidth(), IHEIGHT = renderer
+						.getImageHeight();
 
 				totX = Math.min(Math.max(-IWIDTH / 2, totX), IWIDTH / 2);
 				totY = Math.min(Math.max(-IHEIGHT / 2, totY), IHEIGHT / 2);

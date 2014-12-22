@@ -4,10 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.nio.MappedByteBuffer;
 import java.nio.channels.FileChannel;
-import java.util.Arrays;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -73,7 +71,7 @@ public class PaintCache {
 		int[] buf = new int[(int) (Math.ceil((float) WIDTH / SPACE) * Math
 				.ceil((float) HEIGHT / SPACE))];
 
-		System.out.printf("%d %d %d\n", WIDTH, HEIGHT, SPACE);
+		System.out.printf("%d %d %d\n", (int) Math.ceil((float)WIDTH/SPACE), HEIGHT, SPACE);
 		
 		for (int row = 0; row < HEIGHT; row += SPACE) {
 			byte[] temp = new byte[4 * WIDTH];

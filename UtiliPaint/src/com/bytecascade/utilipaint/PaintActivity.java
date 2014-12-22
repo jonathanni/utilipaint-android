@@ -13,13 +13,16 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.PopupMenu;
 import android.widget.Spinner;
 
@@ -39,6 +42,8 @@ public class PaintActivity extends MenuActivity implements
 	private UpdateAsyncTask task;
 	private PaintCache cache;
 
+	private PaintTool currentTool = PaintTool.PAN_ZOOM;
+
 	@Override
 	public void onSaveInstanceState(Bundle frozenState)
 	{
@@ -54,13 +59,37 @@ public class PaintActivity extends MenuActivity implements
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu)
 	{
+		boolean ret = super.onCreateOptionsMenu(menu);
+
 		// Inflate the menu; this adds items to the action bar if it is present.
 		this.getMenuInflater().inflate(R.menu.paint_activity_menu, menu);
 
 		for (int i = 0; i < menu.size(); i++)
 			menu.getItem(i).setVisible(true);
 
-		return super.onCreateOptionsMenu(menu);
+		Spinner spinner = (Spinner) menu.findItem(R.id.action_tool_select)
+				.getActionView();
+		spinner.setAdapter(new IconAdapter(this, R.layout.row, IconAdapter
+				.getStrings()));
+		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+		{
+			@Override
+			public void onItemSelected(AdapterView<?> adapter, View view,
+					int position, long id)
+			{
+				switch (position)
+				{
+
+				}
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> adapter)
+			{
+			}
+		});
+
+		return ret;
 	}
 
 	@Override
@@ -71,10 +100,6 @@ public class PaintActivity extends MenuActivity implements
 		isRunning = true;
 
 		this.setContentView(R.layout.activity_action_paint);
-		
-		Spinner spinner = (Spinner) this.getLayoutInflater().inflate(R.layout.action_tool_select, null);
-		spinner.setAdapter(new IconAdapter(this, R.layout.row, IconAdapter
-				.getStrings()));
 
 		WindowManager.LayoutParams attrs = this.getWindow().getAttributes();
 		attrs.flags |= WindowManager.LayoutParams.FLAG_FULLSCREEN;
@@ -83,13 +108,12 @@ public class PaintActivity extends MenuActivity implements
 		final BitmapFactory.Options op = new BitmapFactory.Options();
 		op.inScaled = false;
 
-		final PaintGLSurfaceView glsv = (PaintGLSurfaceView) findViewById(R.id.graphics_view);
 		final Resources res = this.getResources();
 
-		Bitmap test;
+		Bitmap test, defaultImage;
 		test = BitmapFactory.decodeResource(res, R.drawable.test, op);
-		// test = Bitmap.createBitmap(DEFAULT_IMG_WIDTH, DEFAULT_IMG_HEIGHT,
-		// Config.ARGB_8888);
+		defaultImage = Bitmap.createBitmap(DEFAULT_IMG_WIDTH,
+				DEFAULT_IMG_HEIGHT, Config.ARGB_8888);
 
 		Timer update = new Timer();
 
@@ -110,8 +134,8 @@ public class PaintActivity extends MenuActivity implements
 			e.printStackTrace();
 		}
 
-		// Renderer is actually created here
-		glsv.setImage(test, test.getWidth(), test.getHeight());
+		((PaintGLSurfaceView) this.findViewById(R.id.graphics_view)).setImage(
+				defaultImage, this.getCache().WIDTH, this.getCache().HEIGHT);
 	}
 
 	File testFile;
@@ -122,8 +146,9 @@ public class PaintActivity extends MenuActivity implements
 		super.onStart();
 		isRunning = true;
 		task.isRunning = true;
-		((PaintGLSurfaceView) findViewById(R.id.graphics_view))
-				.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
+		PaintGLSurfaceView glsv = ((PaintGLSurfaceView) findViewById(R.id.graphics_view));
+		if (glsv.getRenderer() != null)
+			glsv.setRenderMode(GLSurfaceView.RENDERMODE_CONTINUOUSLY);
 	}
 
 	@Override
