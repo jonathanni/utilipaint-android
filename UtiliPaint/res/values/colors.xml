@@ -2,4 +2,7 @@
 
     <color name="black_overlay">#66000000</color>
 
+    <drawable name="black">#000000</drawable>
+    <drawable name="white">#ffffff</drawable>
+
 </resources>

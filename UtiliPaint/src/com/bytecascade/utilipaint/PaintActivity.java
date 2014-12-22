@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.Timer;
 
 import com.example.utilipaint.R;
@@ -15,6 +16,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
 import android.util.Log;
@@ -43,6 +45,8 @@ public class PaintActivity extends MenuActivity implements
 	private PaintCache cache;
 
 	private PaintTool currentTool = PaintTool.PAN_ZOOM;
+	
+	private Point topLeft = new Point(), topRight = new Point();
 
 	@Override
 	public void onSaveInstanceState(Bundle frozenState)
@@ -66,7 +70,7 @@ public class PaintActivity extends MenuActivity implements
 
 		for (int i = 0; i < menu.size(); i++)
 			menu.getItem(i).setVisible(true);
-
+		
 		Spinner spinner = (Spinner) menu.findItem(R.id.action_tool_select)
 				.getActionView();
 		spinner.setAdapter(new IconAdapter(this, R.layout.row, IconAdapter
@@ -77,10 +81,7 @@ public class PaintActivity extends MenuActivity implements
 			public void onItemSelected(AdapterView<?> adapter, View view,
 					int position, long id)
 			{
-				switch (position)
-				{
-
-				}
+				currentTool = PaintTool.values()[position];
 			}
 
 			@Override
@@ -247,5 +248,9 @@ public class PaintActivity extends MenuActivity implements
 	public PaintCache getCache()
 	{
 		return cache;
+	}
+	
+	public PaintTool getCurrentTool(){
+		return currentTool;
 	}
 }

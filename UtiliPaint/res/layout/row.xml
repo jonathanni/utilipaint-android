@@ -22,7 +22,7 @@
         android:layout_toRightOf="@+id/image"
         android:padding="3dip"
         android:text=""
-        android:textColor="@drawable/black"
+        android:textColor="@drawable/white"
         android:textStyle="bold" />
 
 </RelativeLayout>

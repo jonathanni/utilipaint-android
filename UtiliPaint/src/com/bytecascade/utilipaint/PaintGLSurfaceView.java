@@ -58,7 +58,10 @@ public class PaintGLSurfaceView extends GLSurfaceView
 	public boolean onTouchEvent(MotionEvent ev)
 	{
 		if (renderer == null)
-			return true;
+			return false;
+		
+		if(((PaintActivity)context).getCurrentTool() != PaintTool.PAN_ZOOM)
+			return false;
 
 		final float SCALE = 1 / scaleFactor;
 

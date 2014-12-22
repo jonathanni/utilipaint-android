@@ -26,6 +26,4 @@
     <string name="button_cancel">Cancel</string>
     <string name="iconCD">Tool Icon</string>
 
-    <drawable name="black">#000000</drawable>
-
 </resources>

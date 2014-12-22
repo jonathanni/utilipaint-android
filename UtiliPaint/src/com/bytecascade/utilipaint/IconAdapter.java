@@ -11,44 +11,40 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-public class IconAdapter extends ArrayAdapter<String>
-{
+public class IconAdapter extends ArrayAdapter<String> {
 	private Context context;
 
 	private static String[] strings;
 	private static int[] images;
 
-	static
-	{
-		for (int i = 0; i < PaintTool.values().length; i++)
-		{
-			strings[i] = PaintTool.values()[i].getName();
-			images[i] = PaintTool.values()[i].getResourceID();
+	static {
+		strings = new String[PaintTool.values().length];
+		images = new int[PaintTool.values().length];
+		
+		int j = 0;
+		for (PaintTool i : PaintTool.values()) {
+			strings[j] = i.getName();
+			images[j++] = i.getResourceID();
 		}
 	}
 
-	public IconAdapter(Context context, int resource, String[] objects)
-	{
+	public IconAdapter(Context context, int resource, String[] objects) {
 		super(context, resource, objects);
 
 		this.context = context;
 	}
 
 	@Override
-	public View getDropDownView(int position, View convertView, ViewGroup parent)
-	{
+	public View getDropDownView(int position, View convertView, ViewGroup parent) {
 		return getCustomView(position, convertView, parent);
 	}
 
 	@Override
-	public View getView(int position, View convertView, ViewGroup parent)
-	{
+	public View getView(int position, View convertView, ViewGroup parent) {
 		return getCustomView(position, convertView, parent);
 	}
 
-	public View getCustomView(int position, View convertView, ViewGroup parent)
-	{
-
+	public View getCustomView(int position, View convertView, ViewGroup parent) {
 		LayoutInflater inflater = ((Activity) context).getLayoutInflater();
 		View row = inflater.inflate(R.layout.row, parent, false);
 		TextView label = (TextView) row.findViewById(R.id.toolText);
@@ -60,8 +56,7 @@ public class IconAdapter extends ArrayAdapter<String>
 		return row;
 	}
 
-	public static String[] getStrings()
-	{
+	public static String[] getStrings() {
 		return strings;
 	}
 }
