@@ -59,9 +59,6 @@ public class PaintGLSurfaceView extends GLSurfaceView
 	{
 		if (renderer == null)
 			return false;
-		
-		if(((PaintActivity)context).getCurrentTool() != PaintTool.PAN_ZOOM)
-			return false;
 
 		final float SCALE = 1 / scaleFactor;
 
@@ -108,6 +105,9 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			break;
 		// finger 1 down, finger 2 down
 		case MotionEvent.ACTION_POINTER_DOWN:
+			if(((PaintActivity)context).getCurrentTool() != PaintTool.PAN_ZOOM)
+				return false;
+			
 			if (ev.getPointerCount() != 2)
 				break;
 
@@ -137,6 +137,9 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			break;
 		// finger 1 down, finger 2 up
 		case MotionEvent.ACTION_POINTER_UP:
+			if(((PaintActivity)context).getCurrentTool() != PaintTool.PAN_ZOOM)
+				return false;
+			
 			if (ev.getPointerCount() != 2)
 				break;
 
@@ -179,6 +182,6 @@ public class PaintGLSurfaceView extends GLSurfaceView
 
 	public float[] getPSInfo()
 	{
-		return new float[] { -tX, tY, -totX, totY, scaleFactor };
+		return new float[] { -ptotX, ptotY, -totX, totY, scaleFactor };
 	}
 }
