@@ -10,7 +10,8 @@ import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
 import android.util.Log;
 
-public class PaintRenderer implements Renderer {
+public class PaintRenderer implements Renderer
+{
 
 	private final float[] MVPMatrix = new float[16];
 	private final float[] projMatrix = new float[16];
@@ -27,7 +28,8 @@ public class PaintRenderer implements Renderer {
 	private long startTime, endTime, dt;
 
 	public PaintRenderer(Context context, Bitmap image,
-			PaintGLSurfaceView glSurfaceView, int iwidth, int iheight) {
+			PaintGLSurfaceView glSurfaceView, int iwidth, int iheight)
+	{
 		this.context = context;
 		this.rawImage = image;
 		this.surfaceView = glSurfaceView;
@@ -38,21 +40,25 @@ public class PaintRenderer implements Renderer {
 		startTime = System.currentTimeMillis();
 	}
 
-	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
+	public void onSurfaceCreated(GL10 unused, EGLConfig config)
+	{
 		// Set the background frame color
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		this.image = new PaintImage(context, rawImage, surfaceView,
 				this.iwidth, this.iheight);
 	}
 
-	public void onDrawFrame(GL10 unused) {
+	public void onDrawFrame(GL10 unused)
+	{
 		endTime = System.currentTimeMillis();
 
 		dt = endTime - startTime;
 		if (dt < 33)
-			try {
+			try
+			{
 				Thread.sleep(33 - dt);
-			} catch (InterruptedException e) {
+			} catch (InterruptedException e)
+			{
 				e.printStackTrace();
 			}
 		startTime = System.currentTimeMillis();
@@ -74,7 +80,8 @@ public class PaintRenderer implements Renderer {
 		image.draw(MVPMatrix);
 	}
 
-	public void onSurfaceChanged(GL10 unused, int width, int height) {
+	public void onSurfaceChanged(GL10 unused, int width, int height)
+	{
 		GLES20.glViewport(0, 0, width, height);
 
 		this.width = width;
@@ -84,7 +91,8 @@ public class PaintRenderer implements Renderer {
 				+ " h: " + height);
 	}
 
-	public static int loadShader(int type, String shaderCode) {
+	public static int loadShader(int type, String shaderCode)
+	{
 		// Create a Vertex Shader Type Or a Fragment Shader Type
 		// (GLES20.GL_VERTEX_SHADER OR GLES20.GL_FRAGMENT_SHADER)
 		int shader = GLES20.glCreateShader(type);
@@ -96,27 +104,33 @@ public class PaintRenderer implements Renderer {
 		return shader;
 	}
 
-	public PaintImage getImage() {
+	public PaintImage getImage()
+	{
 		return image;
 	}
 
-	public int getWidth() {
+	public int getWidth()
+	{
 		return width;
 	}
 
-	public int getHeight() {
+	public int getHeight()
+	{
 		return height;
 	}
 
-	public int getImageWidth() {
+	public int getImageWidth()
+	{
 		return iwidth;
 	}
 
-	public int getImageHeight() {
+	public int getImageHeight()
+	{
 		return iheight;
 	}
 
-	public long getFrameTime() {
+	public long getFrameTime()
+	{
 		return dt;
 	}
 }

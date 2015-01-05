@@ -70,8 +70,6 @@ public class PaintCache {
 		final int WIDTH = x2 - x1, HEIGHT = y2 - y1;
 		int[] buf = new int[(int) (Math.ceil((float) WIDTH / SPACE) * Math
 				.ceil((float) HEIGHT / SPACE))];
-
-		System.out.printf("%d %d %d\n", (int) Math.ceil((float)WIDTH/SPACE), HEIGHT, SPACE);
 		
 		for (int row = 0; row < HEIGHT; row += SPACE) {
 			byte[] temp = new byte[4 * WIDTH];

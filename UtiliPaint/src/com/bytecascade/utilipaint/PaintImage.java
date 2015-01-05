@@ -20,14 +20,14 @@ public class PaintImage
 	private int textureDataHandle;
 	private static int[] textureHandle = new int[1];
 
-	private final String vertexShaderCode =
+	private static final String VERTEX_SHADER_CODE =
 
 	"attribute vec2 a_TexCoordinate;" + "varying vec2 v_TexCoordinate;"
 			+ "uniform mat4 uMVPMatrix;" + "attribute vec4 vPosition;"
 			+ "void main() {" + "  gl_Position = uMVPMatrix * vPosition;"
 			+ "v_TexCoordinate = a_TexCoordinate;" + "}";
 
-	private final String fragmentShaderCode = "precision mediump float;"
+	private static final String FRAGMENT_SHADER_CODE = "precision mediump float;"
 			+ "uniform vec4 vColor;"
 			+ "uniform sampler2D u_Texture;"
 			+ "varying vec2 v_TexCoordinate;"
@@ -80,9 +80,9 @@ public class PaintImage
 		drawListBuffer.position(0);
 
 		int vertexShader = PaintRenderer.loadShader(GLES20.GL_VERTEX_SHADER,
-				vertexShaderCode);
+				VERTEX_SHADER_CODE);
 		int fragmentShader = PaintRenderer.loadShader(
-				GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+				GLES20.GL_FRAGMENT_SHADER, FRAGMENT_SHADER_CODE);
 
 		shaderProgram = GLES20.glCreateProgram();
 		GLES20.glAttachShader(shaderProgram, vertexShader);

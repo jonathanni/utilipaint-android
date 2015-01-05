@@ -23,9 +23,9 @@ public class PaintGLSurfaceView extends GLSurfaceView
 
 	// Original (x,y), Translate (Dx,Dy), Previous Translate (Dx,Dy)
 	private float oX, oY, tX, tY; // , ptX, ptY;
-	private float ptotX, ptotY, totX, totY;
+	private float ptotX, ptotY, totX, totY, tchX, tchY;
 
-	private boolean dragged = true;
+	private boolean dragged = true, down;
 
 	public PaintGLSurfaceView(Context context)
 	{
@@ -61,6 +61,25 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			return false;
 
 		final float SCALE = 1 / scaleFactor;
+
+		tchX = Math.min(
+				Math.max(-ptotX + (ev.getX(0) - renderer.getWidth() / 2)
+						* SCALE + renderer.getImageWidth() / 2, 0),
+				renderer.getImageWidth());
+		tchY = Math.min(
+				Math.max(-ptotY + (ev.getY(0) - renderer.getHeight() / 2)
+						* SCALE + renderer.getImageHeight() / 2, 0),
+				renderer.getImageHeight());
+
+		Log.w("com.bytecascade.utilipaint", "" + tchX + ", " + tchY);
+
+		if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN)
+			down = true;
+		else if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP)
+			down = false;
+
+		if (((PaintActivity) context).getCurrentTool() != PaintTool.PAN_ZOOM)
+			return true;
 
 		switch (ev.getAction() & MotionEvent.ACTION_MASK)
 		{
@@ -105,9 +124,6 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			break;
 		// finger 1 down, finger 2 down
 		case MotionEvent.ACTION_POINTER_DOWN:
-			if(((PaintActivity)context).getCurrentTool() != PaintTool.PAN_ZOOM)
-				return false;
-			
 			if (ev.getPointerCount() != 2)
 				break;
 
@@ -137,9 +153,6 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			break;
 		// finger 1 down, finger 2 up
 		case MotionEvent.ACTION_POINTER_UP:
-			if(((PaintActivity)context).getCurrentTool() != PaintTool.PAN_ZOOM)
-				return false;
-			
 			if (ev.getPointerCount() != 2)
 				break;
 
@@ -182,6 +195,11 @@ public class PaintGLSurfaceView extends GLSurfaceView
 
 	public float[] getPSInfo()
 	{
-		return new float[] { -ptotX, ptotY, -totX, totY, scaleFactor };
+		return new float[] { tchX, tchY, -totX, totY, scaleFactor };
+	}
+
+	public boolean isDown()
+	{
+		return down;
 	}
 }
