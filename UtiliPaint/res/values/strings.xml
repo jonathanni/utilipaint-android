@@ -33,7 +33,7 @@
     <string name="paint_bucket_title_text">Paint Bucket Tool</string>
     <string name="selection_title_text">Selection Tool</string>
     <string name="shape_title_text">Shape Tool</string>
-    <string name="text_title_text">Shape Tool</string>
+    <string name="text_title_text">Text Tool</string>
     <string name="pan_zoom_desc_text">Move around the image, or zoom into the image.</string>
     <string name="brush_desc_text">Paint directly on the image with a brush.</string>
     <string name="eraser_desc_text">Erase part of the image.</string>
