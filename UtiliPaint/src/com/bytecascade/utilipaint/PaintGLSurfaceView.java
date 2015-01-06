@@ -2,6 +2,7 @@ package com.bytecascade.utilipaint;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -31,7 +32,8 @@ public class PaintGLSurfaceView extends GLSurfaceView
 	{
 		super(context);
 		this.context = context;
-		setEGLContextClientVersion(2);
+		this.setEGLContextClientVersion(2);
+		this.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
 		scaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 	}
 
@@ -39,7 +41,8 @@ public class PaintGLSurfaceView extends GLSurfaceView
 	{
 		super(context, attrs);
 		this.context = context;
-		setEGLContextClientVersion(2);
+		this.setEGLContextClientVersion(2);
+		this.setEGLConfigChooser(8, 8, 8, 8, 0, 0);
 		scaleDetector = new ScaleGestureDetector(context, new ScaleListener());
 	}
 
@@ -74,9 +77,21 @@ public class PaintGLSurfaceView extends GLSurfaceView
 		Log.w("com.bytecascade.utilipaint", "" + tchX + ", " + tchY);
 
 		if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN)
+		{
 			down = true;
-		else if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP)
+			if (((PaintActivity) context).getCurrentTool() == PaintTool.SELECTION)
+				((PaintActivity) this.context).setRectSelectionPoints(
+						(int) Math.round(tchX), (int) Math.round(tchY),
+						(int) Math.round(tchX), (int) Math.round(tchY));
+		} else if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP)
 			down = false;
+
+		if (((PaintActivity) context).getCurrentTool() == PaintTool.SELECTION)
+		{
+			Point p = ((PaintActivity) this.context).getRectSelectionPoints()[0];
+			((PaintActivity) this.context).setRectSelectionPoints(p.x, p.y,
+					(int) Math.round(tchX), (int) Math.round(tchY));
+		}
 
 		if (((PaintActivity) context).getCurrentTool() != PaintTool.PAN_ZOOM)
 			return true;

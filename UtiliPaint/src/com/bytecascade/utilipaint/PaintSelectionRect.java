@@ -28,19 +28,27 @@ public class PaintSelectionRect
 		left.draw(MVPMatrix);
 	}
 
+	public void flipColors()
+	{
+		top.flipColors();
+		right.flipColors();
+		bottom.flipColors();
+		left.flipColors();
+	}
+
 	private class PaintSelectionLine
 	{
-		private final String vertexShaderCode =
+		private static final String VERTEX_SHADER_CODE =
 		// This matrix member variable provides a hook to manipulate
 		// the coordinates of the objects that use this vertex shader
-		"uniform mat4 uMVPMatrix;" +
-
-		"attribute vec4 vPosition;" + "void main() {" +
-		// the matrix must be included as a modifier of gl_Position
+		"uniform mat4 uMVPMatrix;" + "attribute vec4 vPosition;"
+				+ "void main() {" +
+				// the matrix must be included as a modifier of gl_Position
 				"  gl_Position = uMVPMatrix * vPosition;" + "}";
 
-		private final String fragmentShaderCode = "precision mediump float;"
-				+ "uniform vec4 vColor;" + "void main() {"
+		private static final String FRAGMENT_SHADER_CODE = "precision mediump float;"
+				+ "uniform vec4 vColor;"
+				+ "void main() {"
 				+ "  gl_FragColor = vColor;" + "}";
 
 		// number of coordinates per vertex in this array
@@ -64,9 +72,9 @@ public class PaintSelectionRect
 		public PaintSelectionLine()
 		{
 			int vertexShader = PaintRenderer.loadShader(
-					GLES20.GL_VERTEX_SHADER, vertexShaderCode);
+					GLES20.GL_VERTEX_SHADER, VERTEX_SHADER_CODE);
 			int fragmentShader = PaintRenderer.loadShader(
-					GLES20.GL_FRAGMENT_SHADER, fragmentShaderCode);
+					GLES20.GL_FRAGMENT_SHADER, FRAGMENT_SHADER_CODE);
 
 			glProgram = GLES20.glCreateProgram(); // create empty OpenGL ES
 													// Program
@@ -136,6 +144,15 @@ public class PaintSelectionRect
 			lineCoords[1] = y1;
 			lineCoords[2] = x2;
 			lineCoords[3] = y2;
+		}
+
+		// Invert colors
+
+		public void flipColors()
+		{
+			color[0] = 1 - color[0];
+			color[1] = 1 - color[1];
+			color[2] = 1 - color[2];
 		}
 	}
 }

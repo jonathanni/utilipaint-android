@@ -107,8 +107,7 @@ public class PaintCache
 		return bitmap;
 	}
 
-	public void setBitmap(Bitmap bitmap, int x1, int y1, int x2, int y2,
-			float scale)
+	public void processEventQueue()
 	{
 
 	}

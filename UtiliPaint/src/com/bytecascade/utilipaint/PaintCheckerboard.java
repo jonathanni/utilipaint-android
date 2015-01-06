@@ -5,13 +5,16 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 
+import com.example.utilipaint.R;
+
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.opengl.GLES20;
 import android.opengl.GLUtils;
 import android.util.Log;
 
-public class PaintImage
+public class PaintCheckerboard
 {
 	private final FloatBuffer imageTextureCoordinates;
 	private int textureUniformHandle;
@@ -46,36 +49,34 @@ public class PaintImage
 
 	// number of coordinates per vertex in this array
 	static final int COORDS_PER_VERTEX = 2;
-	static float imageCoords[] = { 0, 0, // top left
+	static float planeCoords[] = { 0, 1, // top left
 			0, 0, // bottom left
-			0, 0, // bottom right
-			0, 0 }; // top right
+			1, 0, // bottom right
+			1, 1 }; // top right
 
 	private short drawOrder[] = { 0, 1, 2, 0, 2, 3 }; // Order to draw vertices
 	private final int vertexStride = COORDS_PER_VERTEX * 4; // Bytes per vertex
 
 	private float color[] = { 1.0f, 1.0f, 1.0f, 1.0f };
 
-	private Bitmap image;
+	private int width, height;
+	private static int iconSize;
 
-	private PaintGLSurfaceView surfaceView;
+	private float scale;
 
-	private float width, height;
-	private int fullWidth, fullHeight;
-
-	public PaintImage(final Context activityContext, Bitmap image,
-			PaintGLSurfaceView glSurfaceView, int fwidth, int fheight)
+	public PaintCheckerboard(final Context activityContext, int fwidth,
+			int fheight)
 	{
-		ByteBuffer bb = ByteBuffer.allocateDirect(imageCoords.length * 4);
+		ByteBuffer bb = ByteBuffer.allocateDirect(planeCoords.length * 4);
 		bb.order(ByteOrder.nativeOrder());
 
 		vertexBuffer = bb.asFloatBuffer();
 
 		imageTextureCoordinates = ByteBuffer
-				.allocateDirect(imageCoords.length * 4)
+				.allocateDirect(planeCoords.length * 4)
 				.order(ByteOrder.nativeOrder()).asFloatBuffer();
 
-		ByteBuffer dlb = ByteBuffer.allocateDirect(imageCoords.length * 2);
+		ByteBuffer dlb = ByteBuffer.allocateDirect(planeCoords.length * 2);
 		dlb.order(ByteOrder.nativeOrder());
 		drawListBuffer = dlb.asShortBuffer();
 		drawListBuffer.put(drawOrder);
@@ -95,29 +96,30 @@ public class PaintImage
 
 		GLES20.glLinkProgram(shaderProgram);
 
-		createTexture();
-		textureDataHandle = loadTexture(activityContext, image);
+		this.width = fwidth;
+		this.height = fheight;
 
-		surfaceView = glSurfaceView;
+		planeCoords = new float[] { 0, fheight, 0, 0, fwidth, 0, fwidth,
+				fheight };
 
-		this.width = image.getWidth();
-		this.height = image.getHeight();
-
-		this.fullWidth = fwidth;
-		this.fullHeight = fheight;
+		textureDataHandle = loadTexture(activityContext);
 	}
 
 	public void draw(float[] MVPMatrix)
 	{
-		// Positioning
-		vertexBuffer.put(imageCoords);
-		vertexBuffer.position(0);
 
 		// Texturing
-		final float[] imageTextureCoordinateData = { 0f, 0f, 0f, 1f, 1f, 1f,
-				1f, 0f };
+		final float[] imageTextureCoordinateData = { 0,
+				(float) this.height / iconSize * scale, 0, 0,
+				(float) this.width / iconSize * scale, 0,
+				(float) this.width / iconSize * scale,
+				this.height / iconSize * scale };
 
 		imageTextureCoordinates.put(imageTextureCoordinateData).position(0);
+
+		// Positioning
+		vertexBuffer.put(planeCoords);
+		vertexBuffer.position(0);
 
 		// Shader Program
 		GLES20.glUseProgram(shaderProgram);
@@ -155,36 +157,25 @@ public class PaintImage
 		GLES20.glDisableVertexAttribArray(positionHandle);
 	}
 
-	public static void createTexture()
+	public static int loadTexture(final Context context)
 	{
 		GLES20.glGenTextures(1, textureHandle, 0);
 
-		// Bind to the texture in OpenGL
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
-
-		// Set filtering
-		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
-				GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
-		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
-				GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
-
-		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
-	}
-
-	public static void deleteTexture()
-	{
-		GLES20.glDeleteTextures(1, textureHandle, 0);
-	}
-
-	public static int loadTexture(final Context context, Bitmap image)
-	{
 		if (textureHandle[0] != 0)
 		{
-			Log.i("Load Texture ", "Bitmap w: " + image.getWidth() + " h: "
-					+ image.getHeight() + " " + textureHandle[0]);
-
 			// Bind to the texture in OpenGL
 			GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, textureHandle[0]);
+
+			// Set filtering
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
+					GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
+			GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
+					GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+
+			Bitmap image = BitmapFactory.decodeResource(context.getResources(),
+					R.drawable.checkerboard);
+
+			iconSize = image.getWidth();
 
 			// Load the bitmap into the bound texture.
 			GLUtils.texImage2D(GLES20.GL_TEXTURE_2D, 0, image, 0);
@@ -207,84 +198,8 @@ public class PaintImage
 		return textureHandle[0];
 	}
 
-	public void updateCoords()
+	public void setScale(float scale)
 	{
-		// Texture and position scaling
-
-		final float[] psData = surfaceView.getPSInfo();
-
-		// -0.5f, 0.5f // top left
-		// -0.5f, -0.5f // bottom left
-		// 0.5f, -0.5f // bottom right
-		// 0.5f, 0.5f // top right
-
-		final int VIEWPORT_HW = (int) ((1.0f / psData[4])
-				* surfaceView.getWidth() / 2), VIEWPORT_HH = (int) ((1.0f / psData[4])
-				* surfaceView.getHeight() / 2);
-
-		imageCoords[0] = Math.max(0, (float) fullWidth / 2 + psData[2]
-				- VIEWPORT_HW);
-		imageCoords[1] = Math.min(fullHeight, (float) fullHeight / 2
-				+ psData[3] + VIEWPORT_HH);
-
-		imageCoords[2] = Math.max(0, (float) fullWidth / 2 + psData[2]
-				- VIEWPORT_HW);
-		imageCoords[3] = Math.max(0, (float) fullHeight / 2 + psData[3]
-				- VIEWPORT_HH);
-
-		imageCoords[4] = Math.min(fullWidth, (float) fullWidth / 2 + psData[2]
-				+ VIEWPORT_HW);
-		imageCoords[5] = Math.max(0, (float) fullHeight / 2 + psData[3]
-				- VIEWPORT_HH);
-
-		imageCoords[6] = Math.min(fullWidth, (float) fullWidth / 2 + psData[2]
-				+ VIEWPORT_HW);
-		imageCoords[7] = Math.min(fullHeight, (float) fullHeight / 2
-				+ psData[3] + VIEWPORT_HH);
-	}
-
-	public Bitmap getImage()
-	{
-		return image;
-	}
-
-	public float getWidth()
-	{
-		return width;
-	}
-
-	public void setWidth(float width)
-	{
-		this.width = width;
-	}
-
-	public float getHeight()
-	{
-		return height;
-	}
-
-	public void setHeight(float height)
-	{
-		this.height = height;
-	}
-
-	public int getFullWidth()
-	{
-		return fullWidth;
-	}
-
-	public void setFullWidth(int fullWidth)
-	{
-		this.fullWidth = fullWidth;
-	}
-
-	public int getFullHeight()
-	{
-		return fullHeight;
-	}
-
-	public void setFullHeight(int fullHeight)
-	{
-		this.fullHeight = fullHeight;
+		this.scale = scale;
 	}
 }

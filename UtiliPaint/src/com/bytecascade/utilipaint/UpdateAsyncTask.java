@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.widget.TextView;
 
 public class UpdateAsyncTask extends TimerTask
@@ -81,6 +82,9 @@ public class UpdateAsyncTask extends TimerTask
 			});
 		}
 
+		// Flip colors of selection
+		glsv.getRenderer().getSelection().flipColors();
+
 		final long MEM = this.getAvailableMemory();
 
 		activity.runOnUiThread(new Runnable()
@@ -89,9 +93,19 @@ public class UpdateAsyncTask extends TimerTask
 			public void run()
 			{
 				// Update zoom info
+				String selInfo = " ";
+				Point[] selPoints = ((PaintActivity) activity)
+						.getRectSelectionPoints();
+
+				if (!selPoints[0].equals(selPoints[1]))
+					selInfo = String.format(" sel: %d, %d %dx%d",
+							Math.min(selPoints[0].x, selPoints[1].x),
+							Math.min(selPoints[0].y, selPoints[1].y),
+							Math.abs(selPoints[0].x - selPoints[1].x),
+							Math.abs(selPoints[0].y - selPoints[1].y));
 
 				bottom.setText(String.format(
-						"%s %s bytes free %s fps x: %.2f y: %.2f upd: %d",
+						"%s %s bytes free %s fps x: %.2f y: %.2f upd: %d ms",
 						DecimalFormat.getPercentInstance(Locale.getDefault())
 								.format(glsv.getPSInfo()[4]),
 						DecimalFormat.getNumberInstance(Locale.getDefault())
@@ -102,7 +116,8 @@ public class UpdateAsyncTask extends TimerTask
 								+ (float) glsv.getRenderer().getImageWidth()
 								/ 2, glsv.getPSInfo()[3]
 								+ (float) glsv.getRenderer().getImageHeight()
-								/ 2, diffTime));
+								/ 2, diffTime)
+						+ selInfo);
 			}
 		});
 	}

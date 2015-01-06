@@ -45,8 +45,8 @@ public class PaintActivity extends MenuActivity implements
 	private PaintCache cache;
 
 	private PaintTool currentTool = PaintTool.PAN_ZOOM;
-	
-	private Point topLeft = new Point(), topRight = new Point();
+
+	private Point topLeft = new Point(), bottomRight = new Point();
 
 	@Override
 	public void onSaveInstanceState(Bundle frozenState)
@@ -70,7 +70,7 @@ public class PaintActivity extends MenuActivity implements
 
 		for (int i = 0; i < menu.size(); i++)
 			menu.getItem(i).setVisible(true);
-		
+
 		Spinner spinner = (Spinner) menu.findItem(R.id.action_tool_select)
 				.getActionView();
 		spinner.setAdapter(new IconAdapter(this, R.layout.row, IconAdapter
@@ -249,8 +249,23 @@ public class PaintActivity extends MenuActivity implements
 	{
 		return cache;
 	}
-	
-	public PaintTool getCurrentTool(){
+
+	public PaintTool getCurrentTool()
+	{
 		return currentTool;
+	}
+
+	public Point[] getRectSelectionPoints()
+	{
+		return new Point[] { topLeft, bottomRight };
+	}
+
+	public void setRectSelectionPoints(int x1, int y1, int x2, int y2)
+	{
+		topLeft.x = x1;
+		topLeft.y = y1;
+
+		bottomRight.x = x2;
+		bottomRight.y = y2;
 	}
 }

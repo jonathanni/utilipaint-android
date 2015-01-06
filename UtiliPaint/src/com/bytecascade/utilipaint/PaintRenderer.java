@@ -5,6 +5,7 @@ import javax.microedition.khronos.opengles.GL10;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Point;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
@@ -17,6 +18,8 @@ public class PaintRenderer implements Renderer
 	private final float[] projMatrix = new float[16];
 	private final float[] vMatrix = new float[16];
 
+	private PaintCheckerboard bg;
+	private PaintSelectionRect selection;
 	private PaintImage image;
 	private Context context;
 	private Bitmap rawImage;
@@ -46,6 +49,8 @@ public class PaintRenderer implements Renderer
 		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		this.image = new PaintImage(context, rawImage, surfaceView,
 				this.iwidth, this.iheight);
+		this.selection = new PaintSelectionRect();
+		this.bg = new PaintCheckerboard(context, this.iwidth, this.iheight);
 	}
 
 	public void onDrawFrame(GL10 unused)
@@ -76,8 +81,28 @@ public class PaintRenderer implements Renderer
 				SCALE * -height / 2, SCALE * height / 2, 0.1f, 2);
 		Matrix.multiplyMM(MVPMatrix, 0, projMatrix, 0, vMatrix, 0);
 
+		// Draw checkerboard
+		this.bg.setScale(transforms[4]);
+
+		this.bg.draw(MVPMatrix);
+
+		GLES20.glEnable(GLES20.GL_BLEND);
+		GLES20.glBlendFunc(GLES20.GL_ONE, GLES20.GL_ONE_MINUS_SRC_ALPHA);
+
+		GLES20.glEnable(GLES20.GL_ALPHA_BITS);
+
 		// Draw image
-		image.draw(MVPMatrix);
+		this.image.draw(MVPMatrix);
+
+		GLES20.glDisable(GLES20.GL_ALPHA_BITS);
+
+		{
+			Point[] p = ((PaintActivity) this.context).getRectSelectionPoints();
+			this.selection.setCoords(p[0].x, this.iheight - p[0].y, p[1].x,
+					this.iheight - p[1].y);
+		}
+
+		this.selection.draw(MVPMatrix);
 	}
 
 	public void onSurfaceChanged(GL10 unused, int width, int height)
@@ -102,6 +127,11 @@ public class PaintRenderer implements Renderer
 		GLES20.glCompileShader(shader);
 
 		return shader;
+	}
+
+	public PaintSelectionRect getSelection()
+	{
+		return selection;
 	}
 
 	public PaintImage getImage()

@@ -2,7 +2,8 @@ package com.bytecascade.utilipaint;
 
 import com.example.utilipaint.R;
 
-public enum PaintTool {
+public enum PaintTool
+{
 	PAN_ZOOM("Pan/Zoom Tool", R.drawable.pan_zoom), SELECTION("Selection Tool",
 			R.drawable.selection), MOVE_PIXELS("Move Pixels Tool",
 			R.drawable.move_pixels), MAGIC_WAND("Magic Wand Tool",
@@ -15,21 +16,25 @@ public enum PaintTool {
 	private final String name;
 	private final int resourceID;
 
-	private PaintTool(String name, int rID) {
+	private PaintTool(String name, int rID)
+	{
 		this.name = name;
 		this.resourceID = rID;
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
-	public int getResourceID() {
+	public int getResourceID()
+	{
 		return resourceID;
 	}
-	
+
 	@Override
-	public String toString(){
+	public String toString()
+	{
 		return name + ": " + resourceID;
 	}
 }
