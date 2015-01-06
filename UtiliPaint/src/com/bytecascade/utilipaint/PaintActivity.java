@@ -9,6 +9,7 @@ import java.util.Timer;
 
 import com.example.utilipaint.R;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -26,6 +27,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.PopupMenu;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 
 public class PaintActivity extends MenuActivity implements
@@ -75,6 +77,8 @@ public class PaintActivity extends MenuActivity implements
 				.getActionView();
 		spinner.setAdapter(new IconAdapter(this, R.layout.row, IconAdapter
 				.getStrings()));
+
+		final Activity activity = this;
 		spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
 		{
 			@Override
@@ -82,6 +86,48 @@ public class PaintActivity extends MenuActivity implements
 					int position, long id)
 			{
 				currentTool = PaintTool.values()[position];
+				ScrollView sidebar = (ScrollView) activity
+						.findViewById(R.id.sidebar);
+
+				int rid = -1;
+
+				switch (currentTool)
+				{
+				case PAN_ZOOM:
+					rid = R.layout.pan_zoom;
+					break;
+				case BRUSH:
+					rid = R.layout.brush;
+					break;
+				case ERASER:
+					rid = R.layout.eraser;
+					break;
+				case EYEDROPPER:
+					rid = R.layout.color_selection;
+					break;
+				case MAGIC_WAND:
+					rid = R.layout.magic_wand;
+					break;
+				case MOVE_PIXELS:
+					rid = R.layout.move_pixels;
+					break;
+				case PAINT_BUCKET:
+					rid = R.layout.paint_bucket;
+					break;
+				case SELECTION:
+					rid = R.layout.selection;
+					break;
+				case SHAPE:
+					rid = R.layout.shape;
+					break;
+				case TEXT:
+					rid = R.layout.text;
+					break;
+				default:
+					break;
+				}
+
+				View.inflate(activity, rid, sidebar);
 			}
 
 			@Override

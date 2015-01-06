@@ -11,12 +11,13 @@
         android:orientation="horizontal"
         android:weightSum="1" >
 
-        <ListView
+        <ScrollView
             android:id="@+id/sidebar"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="0.80" >
-        </ListView>
+            android:layout_weight="0.80"
+            android:background="#b0b0b0" >
+        </ScrollView>
 
         <com.bytecascade.utilipaint.PaintGLSurfaceView
             android:id="@+id/graphics_view"

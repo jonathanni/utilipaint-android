@@ -3,6 +3,8 @@
     <color name="black_overlay">#66000000</color>
 
     <drawable name="black">#000000</drawable>
+    <drawable name="dark_grey">#606060</drawable>
+    <drawable name="grey">#909090</drawable>
     <drawable name="white">#ffffff</drawable>
 
 </resources>

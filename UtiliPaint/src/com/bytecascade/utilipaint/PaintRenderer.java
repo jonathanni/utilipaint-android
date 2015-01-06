@@ -46,7 +46,7 @@ public class PaintRenderer implements Renderer
 	public void onSurfaceCreated(GL10 unused, EGLConfig config)
 	{
 		// Set the background frame color
-		GLES20.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+		GLES20.glClearColor(0.811764f, 0.811764f, 0.811764f, 1.0f);
 		this.image = new PaintImage(context, rawImage, surfaceView,
 				this.iwidth, this.iheight);
 		this.selection = new PaintSelectionRect();
