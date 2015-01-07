@@ -30,4 +30,28 @@
         android:textSize="16sp" >
     </TextView>
 
+    <TextView
+        android:id="@+id/move_pixels_status_title_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dip"
+        android:layout_marginStart="5dip"
+        android:padding="3dip"
+        android:text="@string/move_pixels_status_title_text"
+        android:textColor="@drawable/black"
+        android:textSize="24sp"
+        android:textStyle="bold" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/move_pixels_status_desc_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dip"
+        android:layout_marginStart="5dip"
+        android:padding="3dip"
+        android:textColor="@drawable/dark_grey"
+        android:textSize="16sp" >
+    </TextView>
+
 </LinearLayout>

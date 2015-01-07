@@ -44,5 +44,6 @@
     <string name="selection_desc_text">Select part of the image with a rectangle.</string>
     <string name="shape_desc_text">Make a shape.</string>
     <string name="text_desc_text">Write text onto the image.</string>
+    <string name="move_pixels_status_title_text">Status</string>
 
 </resources>

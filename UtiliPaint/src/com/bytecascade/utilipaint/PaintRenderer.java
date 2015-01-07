@@ -21,6 +21,7 @@ public class PaintRenderer implements Renderer
 	private PaintCheckerboard bg;
 	private PaintSelectionRect selection;
 	private PaintImage image;
+	private PaintImage selImage;
 	private Context context;
 	private Bitmap rawImage;
 
@@ -47,8 +48,8 @@ public class PaintRenderer implements Renderer
 	{
 		// Set the background frame color
 		GLES20.glClearColor(0.811764f, 0.811764f, 0.811764f, 1.0f);
-		this.image = new PaintImage(context, rawImage, surfaceView,
-				this.iwidth, this.iheight);
+		this.image = new PaintImage(this.context, this.rawImage,
+				this.surfaceView, this.iwidth, this.iheight);
 		this.selection = new PaintSelectionRect();
 		this.bg = new PaintCheckerboard(context, this.iwidth, this.iheight);
 	}
@@ -74,9 +75,19 @@ public class PaintRenderer implements Renderer
 
 		final float SCALE = 1 / transforms[4];
 
-		Matrix.setLookAtM(vMatrix, 0, iwidth / 2 + transforms[2], iheight / 2
-				+ transforms[3], 1, iwidth / 2 + transforms[2], iheight / 2
-				+ transforms[3], 0, 0, 1, 0);
+		{
+			float dx = transforms[2], dy = transforms[3];
+
+			if (((PaintActivity) context).getCurrentTool() != PaintTool.PAN_ZOOM)
+			{
+				dx = transforms[5];
+				dy = transforms[6];
+			}
+
+			Matrix.setLookAtM(vMatrix, 0, iwidth / 2 + dx, iheight / 2 + dy, 1,
+					iwidth / 2 + dx, iheight / 2 + dy, 0, 0, 1, 0);
+		}
+
 		Matrix.orthoM(projMatrix, 0, SCALE * -width / 2, SCALE * width / 2,
 				SCALE * -height / 2, SCALE * height / 2, 0.1f, 2);
 		Matrix.multiplyMM(MVPMatrix, 0, projMatrix, 0, vMatrix, 0);
@@ -97,9 +108,17 @@ public class PaintRenderer implements Renderer
 		GLES20.glDisable(GLES20.GL_ALPHA_BITS);
 
 		{
+			int dx = 0, dy = 0;
+
+			if (((PaintActivity) this.context).getCurrentTool() == PaintTool.MOVE_PIXELS)
+			{
+				dx = -(int) transforms[2];
+				dy = -(int) transforms[3];
+			}
+
 			Point[] p = ((PaintActivity) this.context).getRectSelectionPoints();
-			this.selection.setCoords(p[0].x, this.iheight - p[0].y, p[1].x,
-					this.iheight - p[1].y);
+			this.selection.setCoords(p[0].x + dx, this.iheight - p[0].y + dy,
+					p[1].x + dx, this.iheight - p[1].y + dy);
 		}
 
 		this.selection.draw(MVPMatrix);

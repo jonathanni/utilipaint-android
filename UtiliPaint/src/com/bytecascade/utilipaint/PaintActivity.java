@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.Timer;
+import java.util.concurrent.LinkedBlockingQueue;
 
 import com.example.utilipaint.R;
 
@@ -17,6 +17,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
@@ -25,13 +26,12 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.PopupMenu;
 import android.widget.ScrollView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 public class PaintActivity extends MenuActivity implements
 		PopupMenu.OnMenuItemClickListener, Serializable
@@ -47,13 +47,18 @@ public class PaintActivity extends MenuActivity implements
 	private static final int DEFAULT_IMG_WIDTH = 800, DEFAULT_IMG_HEIGHT = 600;
 
 	private UpdateAsyncTask task;
-	private PaintCache cache;
+	private PaintCache cache, selCache;
 
 	private PaintTool currentTool = PaintTool.PAN_ZOOM;
 
-	private Point topLeft = new Point(), bottomRight = new Point();
+	private Point p1 = new Point(), p2 = new Point();
 
 	private View[] sidebarLayouts = new View[PaintTool.values().length];
+
+	private LinkedBlockingQueue<PaintAction> paintEvents = new LinkedBlockingQueue<PaintAction>();
+
+	private int primaryColor = Color.argb(1, 0, 0, 0), secondaryColor = Color
+			.argb(1, 1, 1, 1);
 
 	@Override
 	public void onSaveInstanceState(Bundle frozenState)
@@ -81,11 +86,8 @@ public class PaintActivity extends MenuActivity implements
 		LayoutInflater layoutInflater = this.getLayoutInflater();
 
 		for (int i = 0; i < PaintTool.values().length; i++)
-		{
 			sidebarLayouts[i] = layoutInflater.inflate(
 					PaintTool.values()[i].getLayoutID(), null);
-			Log.i("com.bytecascade.utilipaint", "" + sidebarLayouts[i]);
-		}
 
 		Spinner spinner = (Spinner) menu.findItem(R.id.action_tool_select)
 				.getActionView();
@@ -99,12 +101,134 @@ public class PaintActivity extends MenuActivity implements
 			public void onItemSelected(AdapterView<?> adapter, View view,
 					int position, long id)
 			{
+				PaintGLSurfaceView glsv = (PaintGLSurfaceView) activity
+						.findViewById(R.id.graphics_view);
+				float[] transforms = glsv.getPSInfo();
+
 				currentTool = PaintTool.values()[position];
 				ScrollView sidebar = (ScrollView) activity
 						.findViewById(R.id.sidebar);
 
 				sidebar.removeAllViews();
 				sidebar.addView(sidebarLayouts[position]);
+
+				switch (currentTool)
+				{
+				case MOVE_PIXELS:
+					TextView t = (TextView) activity
+							.findViewById(R.id.move_pixels_status_desc_text);
+					if (p1.equals(p2))
+						t.setText("Please make a selection first.");
+					else
+					{
+						t.setText("Ready.");
+
+						glsv.storeCoords();
+
+						int x1 = Math.min(p1.x, p2.x), x2 = Math
+								.max(p1.x, p2.x), y1 = Math.min(p1.y, p2.y), y2 = Math
+								.max(p1.y, p2.y);
+
+						try
+						{
+							selCache = new PaintCache(cache, x1, y1, x2, y2);
+						} catch (IOException e)
+						{
+							e.printStackTrace();
+						}
+
+						try
+						{
+							for (int row = Math.min(p1.y, p2.y); row < Math
+									.max(p1.y, p2.y); row++)
+							{
+								Log.i("com.bytecascade.utilipaint", "" + row);
+
+								int[] colors = new int[x2 - x1];
+
+								paintEvents
+										.put(new PaintAction(
+												PaintAction.PaintActionType.REPLACE_PIXELS,
+												x1, y1, x2, y2, new Object[] {
+														new int[] { x1, row,
+																x2, row + 1 },
+														colors }));
+							}
+						} catch (InterruptedException e)
+						{
+							e.printStackTrace();
+						}
+					}
+					break;
+				default:
+					break;
+				}
+
+				if (currentTool != PaintTool.MOVE_PIXELS && selCache != null)
+				{
+					int dx, dy;
+
+					dx = -(int) transforms[2];
+					dy = (int) transforms[3];
+
+					for (int row = Math.min(p1.y, p2.y); row < Math.max(p1.y,
+							p2.y); row++)
+					{
+
+						if (row + dy < 0 || row + dy >= cache.HEIGHT)
+							continue;
+
+						int x1 = Math.min(p1.x, p2.x), x2 = Math
+								.max(p1.x, p2.x), y1 = Math.min(p1.y, p2.y), y2 = Math
+								.max(p1.y, p2.y);
+
+						if ((x1 + dx < 0 && x2 + dx < 0)
+								|| (x1 + dx >= cache.WIDTH && x2 + dx >= cache.WIDTH))
+							continue;
+
+						Bitmap b = selCache.getBitmap(x1, row, x2, row + 1, 1);
+
+						int[] colors = new int[x2 - x1];
+
+						b.getPixels(colors, 0, b.getWidth(), 0, 0,
+								b.getWidth(), b.getHeight());
+
+						Log.e("com.bytecascade.utilipaint", "" + colors[0]);
+
+						x1 = Math.max(x1 + dx, 0);
+						x2 = Math.min(x2 + dx, cache.WIDTH - 1);
+
+						y1 = Math.max(y1 + dy, 0);
+						y2 = Math.min(y2 + dy, cache.HEIGHT - 1);
+
+						Log.i("com.bytecascade.utilipaint", "CACHE: " + x1
+								+ "," + x2 + ":" + cache.WIDTH + ","
+								+ cache.HEIGHT + ":"
+								+ cache.getBuffer().capacity());
+
+						paintEvents.add(new PaintAction(
+								PaintAction.PaintActionType.REPLACE_PIXELS, x1,
+								y1, x2, y2, new Object[] {
+										new int[] { x1, row + dy, x2,
+												row + dy + 1 }, colors }));
+
+						b.recycle();
+					}
+
+					try
+					{
+						selCache.close();
+					} catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+					selCache = null;
+
+					p1 = new Point();
+					p2 = new Point();
+
+					glsv.restoreCoords();
+				}
 			}
 
 			@Override
@@ -152,7 +276,7 @@ public class PaintActivity extends MenuActivity implements
 			testOut.flush();
 			testOut.close();
 
-			cache = new PaintCache(this, testFile);
+			cache = new PaintCache(this, testFile, "testIMG");
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -160,6 +284,8 @@ public class PaintActivity extends MenuActivity implements
 
 		((PaintGLSurfaceView) this.findViewById(R.id.graphics_view)).setImage(
 				defaultImage, this.getCache().WIDTH, this.getCache().HEIGHT);
+
+		new Thread(cache.new PaintCacheUpdater()).start();
 	}
 
 	File testFile;
@@ -280,15 +406,40 @@ public class PaintActivity extends MenuActivity implements
 
 	public Point[] getRectSelectionPoints()
 	{
-		return new Point[] { topLeft, bottomRight };
+		return new Point[] { p1, p2 };
 	}
 
 	public void setRectSelectionPoints(int x1, int y1, int x2, int y2)
 	{
-		topLeft.x = x1;
-		topLeft.y = y1;
+		p1.x = x1;
+		p1.y = y1;
 
-		bottomRight.x = x2;
-		bottomRight.y = y2;
+		p2.x = x2;
+		p2.y = y2;
+	}
+
+	public LinkedBlockingQueue<PaintAction> getPaintEvents()
+	{
+		return paintEvents;
+	}
+
+	public int getPrimaryColor()
+	{
+		return primaryColor;
+	}
+
+	public void setPrimaryColor(int primaryColor)
+	{
+		this.primaryColor = primaryColor;
+	}
+
+	public int getSecondaryColor()
+	{
+		return secondaryColor;
+	}
+
+	public void setSecondaryColor(int secondaryColor)
+	{
+		this.secondaryColor = secondaryColor;
 	}
 }

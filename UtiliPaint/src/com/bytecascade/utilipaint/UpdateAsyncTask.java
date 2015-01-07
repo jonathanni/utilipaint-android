@@ -54,7 +54,8 @@ public class UpdateAsyncTask extends TimerTask
 				.getWidth()), h = (int) ((1.0f / info[4]) * glsv.getHeight());
 
 		if (((PaintActivity) activity).getCache() != null
-				&& ((PaintActivity) activity).getCache().isSuccessful())
+				&& ((PaintActivity) activity).getCache().isSuccessful()
+				&& ((PaintActivity) activity).getCurrentTool() == PaintTool.PAN_ZOOM)
 		{
 			final Bitmap image = ((PaintActivity) activity).getCache()
 					.getBitmap(

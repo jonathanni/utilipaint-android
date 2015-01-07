@@ -24,7 +24,7 @@ public class PaintGLSurfaceView extends GLSurfaceView
 
 	// Original (x,y), Translate (Dx,Dy), Previous Translate (Dx,Dy)
 	private float oX, oY, tX, tY; // , ptX, ptY;
-	private float ptotX, ptotY, totX, totY, tchX, tchY;
+	private float ptotX, ptotY, totX, totY, tchX, tchY, optotX, optotY;
 
 	private boolean dragged = true, down;
 
@@ -74,8 +74,10 @@ public class PaintGLSurfaceView extends GLSurfaceView
 						* SCALE + renderer.getImageHeight() / 2, 0),
 				renderer.getImageHeight());
 
-		Log.w("com.bytecascade.utilipaint", "" + tchX + ", " + tchY);
-
+		if(((PaintActivity)context).getCurrentTool() == PaintTool.SELECTION){
+			
+		}
+		
 		if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN)
 		{
 			down = true;
@@ -93,7 +95,8 @@ public class PaintGLSurfaceView extends GLSurfaceView
 					(int) Math.round(tchX), (int) Math.round(tchY));
 		}
 
-		if (((PaintActivity) context).getCurrentTool() != PaintTool.PAN_ZOOM)
+		if (((PaintActivity) context).getCurrentTool() != PaintTool.PAN_ZOOM
+				&& ((PaintActivity) context).getCurrentTool() != PaintTool.MOVE_PIXELS)
 			return true;
 
 		switch (ev.getAction() & MotionEvent.ACTION_MASK)
@@ -120,6 +123,7 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			totX = ptotX + tX * SCALE;
 			totY = ptotY + tY * SCALE;
 
+			if (((PaintActivity) context).getCurrentTool() == PaintTool.PAN_ZOOM)
 			{
 				final float IWIDTH = renderer.getImageWidth(), IHEIGHT = renderer
 						.getImageHeight();
@@ -139,6 +143,9 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			break;
 		// finger 1 down, finger 2 down
 		case MotionEvent.ACTION_POINTER_DOWN:
+			if (((PaintActivity) context).getCurrentTool() == PaintTool.MOVE_PIXELS)
+				break;
+
 			if (ev.getPointerCount() != 2)
 				break;
 
@@ -168,6 +175,9 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			break;
 		// finger 1 down, finger 2 up
 		case MotionEvent.ACTION_POINTER_UP:
+			if (((PaintActivity) context).getCurrentTool() == PaintTool.MOVE_PIXELS)
+				break;
+
 			if (ev.getPointerCount() != 2)
 				break;
 
@@ -187,7 +197,8 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			break;
 		}
 
-		scaleDetector.onTouchEvent(ev);
+		if (((PaintActivity) context).getCurrentTool() != PaintTool.MOVE_PIXELS)
+			scaleDetector.onTouchEvent(ev);
 
 		if ((mode == DRAG && scaleFactor != 1f && dragged) || mode == ZOOM)
 			requestRender();
@@ -210,11 +221,33 @@ public class PaintGLSurfaceView extends GLSurfaceView
 
 	public float[] getPSInfo()
 	{
-		return new float[] { tchX, tchY, -totX, totY, scaleFactor };
+		return new float[] { tchX, tchY, -totX, totY, scaleFactor, -optotX,
+				optotY };
 	}
 
 	public boolean isDown()
 	{
 		return down;
+	}
+
+	public void storeCoords()
+	{
+		optotX = ptotX;
+		optotY = ptotY;
+
+		ptotX = 0;
+		ptotY = 0;
+
+		totX = 0;
+		totY = 0;
+	}
+
+	public void restoreCoords()
+	{
+		ptotX = optotX;
+		ptotY = optotY;
+
+		totX = ptotX;
+		totY = ptotY;
 	}
 }
