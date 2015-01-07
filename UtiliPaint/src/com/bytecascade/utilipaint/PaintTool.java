@@ -11,7 +11,7 @@ public enum PaintTool
 			"Paint Bucket Tool", R.drawable.paint_bucket, R.layout.paint_bucket), BRUSH(
 			"Brush Tool", R.drawable.brush, R.layout.brush), ERASER(
 			"Eraser Tool", R.drawable.eraser, R.layout.eraser), EYEDROPPER(
-			"Color Selection Tool", R.drawable.color_selection,
+			"Eyedropper Tool", R.drawable.color_selection,
 			R.layout.color_selection), TEXT("Text Tool", R.drawable.text,
 			R.layout.text), SHAPE("Shape Tool", R.drawable.shape,
 			R.layout.shape);

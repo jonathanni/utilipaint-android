@@ -14,13 +14,16 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Point;
+import android.net.Uri;
 import android.opengl.GLSurfaceView;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -60,6 +63,10 @@ public class PaintActivity extends MenuActivity implements
 	private int primaryColor = Color.argb(1, 0, 0, 0), secondaryColor = Color
 			.argb(1, 1, 1, 1);
 
+	private static final String FILE_URI_STRING = "com.bytecascade.utilipaint.FILE_URI";
+
+	private static final int PICKFILE_REQUEST_CODE = 0x1;
+
 	@Override
 	public void onSaveInstanceState(Bundle frozenState)
 	{
@@ -70,6 +77,24 @@ public class PaintActivity extends MenuActivity implements
 	{
 		// Always call the superclass so it can restore the view hierarchy
 		super.onRestoreInstanceState(savedInstanceState);
+	}
+
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data)
+	{
+		switch (requestCode)
+		{
+		case PICKFILE_REQUEST_CODE:
+			if (resultCode != RESULT_CANCELED)
+			{
+				Intent intent = new Intent(this, PaintActivity.class);
+				intent.putExtra(FILE_URI_STRING, data.getData());
+				startActivity(intent);
+
+				finish();
+			}
+			break;
+		}
 	}
 
 	@Override
@@ -105,6 +130,8 @@ public class PaintActivity extends MenuActivity implements
 						.findViewById(R.id.graphics_view);
 				float[] transforms = glsv.getPSInfo();
 
+				PaintTool lastTool = currentTool;
+
 				currentTool = PaintTool.values()[position];
 				ScrollView sidebar = (ScrollView) activity
 						.findViewById(R.id.sidebar);
@@ -122,8 +149,6 @@ public class PaintActivity extends MenuActivity implements
 					else
 					{
 						t.setText("Ready.");
-
-						glsv.storeCoords();
 
 						int x1 = Math.min(p1.x, p2.x), x2 = Math
 								.max(p1.x, p2.x), y1 = Math.min(p1.y, p2.y), y2 = Math
@@ -193,18 +218,11 @@ public class PaintActivity extends MenuActivity implements
 						b.getPixels(colors, 0, b.getWidth(), 0, 0,
 								b.getWidth(), b.getHeight());
 
-						Log.e("com.bytecascade.utilipaint", "" + colors[0]);
-
 						x1 = Math.max(x1 + dx, 0);
 						x2 = Math.min(x2 + dx, cache.WIDTH - 1);
 
 						y1 = Math.max(y1 + dy, 0);
 						y2 = Math.min(y2 + dy, cache.HEIGHT - 1);
-
-						Log.i("com.bytecascade.utilipaint", "CACHE: " + x1
-								+ "," + x2 + ":" + cache.WIDTH + ","
-								+ cache.HEIGHT + ":"
-								+ cache.getBuffer().capacity());
 
 						paintEvents.add(new PaintAction(
 								PaintAction.PaintActionType.REPLACE_PIXELS, x1,
@@ -226,9 +244,12 @@ public class PaintActivity extends MenuActivity implements
 
 					p1 = new Point();
 					p2 = new Point();
-
-					glsv.restoreCoords();
 				}
+
+				if (currentTool == PaintTool.PAN_ZOOM)
+					glsv.restoreCoords();
+				else if (lastTool == PaintTool.PAN_ZOOM)
+					glsv.storeCoords();
 			}
 
 			@Override
@@ -244,6 +265,20 @@ public class PaintActivity extends MenuActivity implements
 	protected void onCreate(Bundle savedInstanceState)
 	{
 		super.onCreate(savedInstanceState);
+
+		Uri fileOpenUri;
+
+		if (savedInstanceState == null)
+		{
+			Bundle extras = getIntent().getExtras();
+			if (extras == null)
+				fileOpenUri = null;
+			else
+				fileOpenUri = extras.getParcelable(FILE_URI_STRING);
+		} else
+			fileOpenUri = savedInstanceState.getParcelable(FILE_URI_STRING);
+
+		Log.e("com.bytecascade.utilipaint", "" + fileOpenUri);
 
 		isRunning = true;
 
@@ -267,16 +302,28 @@ public class PaintActivity extends MenuActivity implements
 
 		update.schedule(task = new UpdateAsyncTask(this), 0, 200);
 
+		File openFile = null;
+		if (fileOpenUri == null)
+			try
+			{
+				openFile = File.createTempFile("testIMG", ".png",
+						this.getCacheDir());
+				FileOutputStream testOut = new FileOutputStream(openFile);
+
+				test.compress(Bitmap.CompressFormat.PNG, 100, testOut);
+
+				testOut.flush();
+				testOut.close();
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+		else
+			openFile = new File(getPath(fileOpenUri));
+
 		try
 		{
-			File testFile = File.createTempFile("testIMG", ".png",
-					this.getCacheDir());
-			FileOutputStream testOut = new FileOutputStream(testFile);
-			test.compress(Bitmap.CompressFormat.PNG, 100, testOut);
-			testOut.flush();
-			testOut.close();
-
-			cache = new PaintCache(this, testFile, "testIMG");
+			cache = new PaintCache(this, openFile, "testIMG");
 		} catch (IOException e)
 		{
 			e.printStackTrace();
@@ -287,8 +334,6 @@ public class PaintActivity extends MenuActivity implements
 
 		new Thread(cache.new PaintCacheUpdater()).start();
 	}
-
-	File testFile;
 
 	@Override
 	protected void onStart()
@@ -359,7 +404,7 @@ public class PaintActivity extends MenuActivity implements
 					{
 						public void onClick(DialogInterface dialog, int id)
 						{
-							Log.d("com.bytecascade.utilipaint", "New Document");
+							Log.i("com.bytecascade.utilipaint", "New Document");
 
 							Intent intent = new Intent(context,
 									PaintActivity.class);
@@ -376,6 +421,15 @@ public class PaintActivity extends MenuActivity implements
 
 			return true;
 
+		case R.id.action_open:
+			Log.i("com.bytecascade.utilipaint", "Open Document");
+
+			Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+			intent.setType("image/*");
+			startActivityForResult(intent, PICKFILE_REQUEST_CODE);
+
+			return true;
+
 		case R.id.action_exit:
 			finish();
 			return true;
@@ -387,6 +441,17 @@ public class PaintActivity extends MenuActivity implements
 		}
 
 		return false;
+	}
+
+	public String getPath(Uri uri)
+	{
+		String[] projection = { MediaStore.Images.Media.DATA };
+		Cursor cursor = managedQuery(uri, projection, null, null, null);
+		startManagingCursor(cursor);
+		int column_index = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+		cursor.moveToFirst();
+		return cursor.getString(column_index);
 	}
 
 	public long getAvailableMemory()

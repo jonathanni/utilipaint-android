@@ -27,7 +27,7 @@
     <string name="pan_zoom_title_text">Pan/Zoom Tool</string>
     <string name="brush_title_text">Brush Tool</string>
     <string name="eraser_title_text">Eraser Tool</string>
-    <string name="color_selection_title_text">Color Selection Tool</string>
+    <string name="color_selection_title_text">Eyedropper Tool</string>
     <string name="magic_wand_title_text">Magic Wand Tool</string>
     <string name="move_pixels_title_text">Move Pixels Tool</string>
     <string name="paint_bucket_title_text">Paint Bucket Tool</string>

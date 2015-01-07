@@ -13,6 +13,8 @@ import android.util.Log;
 
 public class PaintImage
 {
+	private Context context;
+
 	private final FloatBuffer imageTextureCoordinates;
 	private int textureUniformHandle;
 	private int textureCoordinateHandle;
@@ -66,6 +68,8 @@ public class PaintImage
 	public PaintImage(final Context activityContext, Bitmap image,
 			PaintGLSurfaceView glSurfaceView, int fwidth, int fheight)
 	{
+		this.context = activityContext;
+
 		ByteBuffer bb = ByteBuffer.allocateDirect(imageCoords.length * 4);
 		bb.order(ByteOrder.nativeOrder());
 
@@ -218,29 +222,33 @@ public class PaintImage
 		// 0.5f, -0.5f // bottom right
 		// 0.5f, 0.5f // top right
 
+		float dx = psData[2], dy = psData[3];
+
+		if (((PaintActivity) context).getCurrentTool() != PaintTool.PAN_ZOOM)
+		{
+			dx = psData[5];
+			dy = psData[6];
+		}
+
 		final int VIEWPORT_HW = (int) ((1.0f / psData[4])
 				* surfaceView.getWidth() / 2), VIEWPORT_HH = (int) ((1.0f / psData[4])
 				* surfaceView.getHeight() / 2);
 
-		imageCoords[0] = Math.max(0, (float) fullWidth / 2 + psData[2]
-				- VIEWPORT_HW);
-		imageCoords[1] = Math.min(fullHeight, (float) fullHeight / 2
-				+ psData[3] + VIEWPORT_HH);
+		imageCoords[0] = Math.max(0, (float) fullWidth / 2 + dx - VIEWPORT_HW);
+		imageCoords[1] = Math.min(fullHeight, (float) fullHeight / 2 + dy
+				+ VIEWPORT_HH);
 
-		imageCoords[2] = Math.max(0, (float) fullWidth / 2 + psData[2]
-				- VIEWPORT_HW);
-		imageCoords[3] = Math.max(0, (float) fullHeight / 2 + psData[3]
-				- VIEWPORT_HH);
+		imageCoords[2] = Math.max(0, (float) fullWidth / 2 + dx - VIEWPORT_HW);
+		imageCoords[3] = Math.max(0, (float) fullHeight / 2 + dy - VIEWPORT_HH);
 
-		imageCoords[4] = Math.min(fullWidth, (float) fullWidth / 2 + psData[2]
+		imageCoords[4] = Math.min(fullWidth, (float) fullWidth / 2 + dx
 				+ VIEWPORT_HW);
-		imageCoords[5] = Math.max(0, (float) fullHeight / 2 + psData[3]
-				- VIEWPORT_HH);
+		imageCoords[5] = Math.max(0, (float) fullHeight / 2 + dy - VIEWPORT_HH);
 
-		imageCoords[6] = Math.min(fullWidth, (float) fullWidth / 2 + psData[2]
+		imageCoords[6] = Math.min(fullWidth, (float) fullWidth / 2 + dx
 				+ VIEWPORT_HW);
-		imageCoords[7] = Math.min(fullHeight, (float) fullHeight / 2
-				+ psData[3] + VIEWPORT_HH);
+		imageCoords[7] = Math.min(fullHeight, (float) fullHeight / 2 + dy
+				+ VIEWPORT_HH);
 	}
 
 	public Bitmap getImage()

@@ -66,18 +66,14 @@ public class PaintGLSurfaceView extends GLSurfaceView
 		final float SCALE = 1 / scaleFactor;
 
 		tchX = Math.min(
-				Math.max(-ptotX + (ev.getX(0) - renderer.getWidth() / 2)
+				Math.max(-optotX + (ev.getX(0) - renderer.getWidth() / 2)
 						* SCALE + renderer.getImageWidth() / 2, 0),
 				renderer.getImageWidth());
 		tchY = Math.min(
-				Math.max(-ptotY + (ev.getY(0) - renderer.getHeight() / 2)
+				Math.max(-optotY + (ev.getY(0) - renderer.getHeight() / 2)
 						* SCALE + renderer.getImageHeight() / 2, 0),
 				renderer.getImageHeight());
 
-		if(((PaintActivity)context).getCurrentTool() == PaintTool.SELECTION){
-			
-		}
-		
 		if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN)
 		{
 			down = true;
