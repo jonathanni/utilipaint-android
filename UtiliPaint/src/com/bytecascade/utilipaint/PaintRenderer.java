@@ -74,8 +74,6 @@ public class PaintRenderer implements Renderer
 		GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT);
 
 		float[] transforms = surfaceView.getPSInfo();
-		
-		Log.i("com.bytecascade.utilipaint", Arrays.toString(transforms));
 
 		final float SCALE = 1 / transforms[4];
 

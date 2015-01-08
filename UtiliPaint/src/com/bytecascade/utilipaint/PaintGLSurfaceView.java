@@ -74,6 +74,98 @@ public class PaintGLSurfaceView extends GLSurfaceView
 						* SCALE + renderer.getImageHeight() / 2, 0),
 				renderer.getImageHeight());
 
+		Log.i("com.bytecascade.utilipaint", "" + tchX + "," + tchY);
+
+		if (((PaintActivity) context).getCurrentTool() == PaintTool.BRUSH)
+		{
+			for (int x = -(((PaintActivity) context).getBrushRadius()) + 1; x < ((PaintActivity) context)
+					.getBrushRadius(); x++)
+				for (int y = -(((PaintActivity) context).getBrushRadius()) + 1; y < ((PaintActivity) context)
+						.getBrushRadius(); y++)
+					if (Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2.0)) <= ((PaintActivity) context)
+							.getBrushRadius())
+						((PaintActivity) context)
+								.getPaintEvents()
+								.add(new PaintAction(
+										PaintAction.PaintActionType.REPLACE_PIXEL,
+										Math.max(
+												(int) Math.round(tchX)
+														- ((PaintActivity) context)
+																.getBrushRadius()
+														+ 1, 0),
+										Math.max(
+												(int) Math.round(tchY)
+														- ((PaintActivity) context)
+																.getBrushRadius()
+														+ 1, 0),
+										Math.min(
+												(int) Math.round(tchX)
+														+ ((PaintActivity) context)
+																.getBrushRadius(),
+												renderer.getImageWidth()),
+										Math.min(
+												(int) Math.round(tchY)
+														+ ((PaintActivity) context)
+																.getBrushRadius(),
+												renderer.getImageHeight()),
+										new Object[] {
+												new int[] {
+														x
+																+ ((PaintActivity) context)
+																		.getBrushRadius()
+																- 1,
+														y
+																+ ((PaintActivity) context)
+																		.getBrushRadius()
+																- 1 },
+												((PaintActivity) context)
+														.getPrimaryColor() }));
+		}
+
+		if (((PaintActivity) context).getCurrentTool() == PaintTool.ERASER)
+		{
+			for (int x = -(((PaintActivity) context).getEraserRadius()) + 1; x < ((PaintActivity) context)
+					.getEraserRadius(); x++)
+				for (int y = -(((PaintActivity) context).getEraserRadius()) + 1; y < ((PaintActivity) context)
+						.getEraserRadius(); y++)
+					if (Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2.0)) <= ((PaintActivity) context)
+							.getEraserRadius())
+						((PaintActivity) context)
+								.getPaintEvents()
+								.add(new PaintAction(
+										PaintAction.PaintActionType.REPLACE_PIXEL,
+										Math.max(
+												(int) Math.round(tchX)
+														- ((PaintActivity) context)
+																.getEraserRadius()
+														+ 1, 0),
+										Math.max(
+												(int) Math.round(tchY)
+														- ((PaintActivity) context)
+																.getEraserRadius()
+														+ 1, 0),
+										Math.min(
+												(int) Math.round(tchX)
+														+ ((PaintActivity) context)
+																.getEraserRadius(),
+												renderer.getImageWidth()),
+										Math.min(
+												(int) Math.round(tchY)
+														+ ((PaintActivity) context)
+																.getEraserRadius(),
+												renderer.getImageHeight()),
+										new Object[] {
+												new int[] {
+														x
+																+ ((PaintActivity) context)
+																		.getEraserRadius()
+																- 1,
+														y
+																+ ((PaintActivity) context)
+																		.getEraserRadius()
+																- 1 }, 0 }));
+		}
+
 		if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN)
 		{
 			down = true;

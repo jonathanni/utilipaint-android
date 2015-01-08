@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.MemoryInfo;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Point;
 import android.widget.TextView;
 
@@ -97,6 +98,8 @@ public class UpdateAsyncTask extends TimerTask
 				String selInfo = " ";
 				Point[] selPoints = ((PaintActivity) activity)
 						.getRectSelectionPoints();
+				int col1 = ((PaintActivity) activity).getPrimaryColor(), col2 = ((PaintActivity) activity)
+						.getSecondaryColor();
 
 				if (!selPoints[0].equals(selPoints[1]))
 					selInfo = String.format(" sel: %d, %d %dx%d",
@@ -105,19 +108,27 @@ public class UpdateAsyncTask extends TimerTask
 							Math.abs(selPoints[0].x - selPoints[1].x),
 							Math.abs(selPoints[0].y - selPoints[1].y));
 
-				bottom.setText(String.format(
-						"%s %s bytes free %s fps x: %.2f y: %.2f upd: %d ms",
-						DecimalFormat.getPercentInstance(Locale.getDefault())
-								.format(glsv.getPSInfo()[4]),
-						DecimalFormat.getNumberInstance(Locale.getDefault())
-								.format(MEM),
-						DecimalFormat.getNumberInstance(Locale.getDefault())
-								.format((int) (1000.0 / glsv.getRenderer()
-										.getFrameTime())), glsv.getPSInfo()[2]
-								+ (float) glsv.getRenderer().getImageWidth()
-								/ 2, glsv.getPSInfo()[3]
-								+ (float) glsv.getRenderer().getImageHeight()
-								/ 2, diffTime)
+				bottom.setText(String
+						.format("%s %s bytes free %s fps x: %.2f y: %.2f upd: %d ms rgba col1: #%02X%02X%02X%02X col2: #%02X%02X%02X%02X",
+								DecimalFormat.getPercentInstance(
+										Locale.getDefault()).format(
+										glsv.getPSInfo()[4]),
+								DecimalFormat.getNumberInstance(
+										Locale.getDefault()).format(MEM),
+								DecimalFormat.getNumberInstance(
+										Locale.getDefault()).format(
+										(int) (1000.0 / glsv.getRenderer()
+												.getFrameTime())),
+								glsv.getPSInfo()[2]
+										+ (float) glsv.getRenderer()
+												.getImageWidth() / 2,
+								glsv.getPSInfo()[3]
+										+ (float) glsv.getRenderer()
+												.getImageHeight() / 2,
+								diffTime, Color.red(col1), Color.green(col1),
+								Color.blue(col1), Color.alpha(col1), Color
+										.red(col2), Color.green(col2), Color
+										.blue(col2), Color.alpha(col2))
 						+ selInfo);
 			}
 		});

@@ -60,12 +60,19 @@ public class PaintActivity extends MenuActivity implements
 
 	private LinkedBlockingQueue<PaintAction> paintEvents = new LinkedBlockingQueue<PaintAction>();
 
-	private int primaryColor = Color.argb(1, 0, 0, 0), secondaryColor = Color
-			.argb(1, 1, 1, 1);
+	private int primaryColor = Color.argb(255, 0, 0, 0), secondaryColor = Color
+			.argb(255, 255, 255, 255);
+	
+	private int brushRadius = 8, eraserRadius = 8;
 
 	private static final String FILE_URI_STRING = "com.bytecascade.utilipaint.FILE_URI";
 
-	private static final int PICKFILE_REQUEST_CODE = 0x1;
+	private static final int PICKFILE_REQUEST_CODE = 0x1,
+			SAVEFILE_REQUEST_CODE = 0x2;
+
+	private Uri saveUri = null;
+
+	private Menu optionMenu;
 
 	@Override
 	public void onSaveInstanceState(Bundle frozenState)
@@ -82,18 +89,21 @@ public class PaintActivity extends MenuActivity implements
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data)
 	{
-		switch (requestCode)
+		if (resultCode != RESULT_CANCELED)
 		{
-		case PICKFILE_REQUEST_CODE:
-			if (resultCode != RESULT_CANCELED)
+			switch (requestCode)
 			{
+			case PICKFILE_REQUEST_CODE:
 				Intent intent = new Intent(this, PaintActivity.class);
 				intent.putExtra(FILE_URI_STRING, data.getData());
 				startActivity(intent);
 
 				finish();
+				break;
+			case SAVEFILE_REQUEST_CODE:
+				saveUri = data.getData();
+				break;
 			}
-			break;
 		}
 	}
 
@@ -257,6 +267,8 @@ public class PaintActivity extends MenuActivity implements
 			{
 			}
 		});
+
+		this.optionMenu = menu;
 
 		return ret;
 	}
@@ -422,11 +434,29 @@ public class PaintActivity extends MenuActivity implements
 			return true;
 
 		case R.id.action_open:
+		{
 			Log.i("com.bytecascade.utilipaint", "Open Document");
 
 			Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
 			intent.setType("image/*");
 			startActivityForResult(intent, PICKFILE_REQUEST_CODE);
+		}
+			return true;
+
+		case R.id.action_save_as:
+		{
+			Intent intent = new Intent(Intent.ACTION_PICK);
+			intent.setType("image/*");
+			startActivityForResult(intent, SAVEFILE_REQUEST_CODE);
+
+			//MenuItem save = this.optionMenu.findItem(R.id.action_file)
+			//		.getSubMenu().findItem(R.id.action_save);
+			//save.setEnabled(true);
+		}
+
+		// leave no return
+
+		case R.id.action_save:
 
 			return true;
 
@@ -506,5 +536,25 @@ public class PaintActivity extends MenuActivity implements
 	public void setSecondaryColor(int secondaryColor)
 	{
 		this.secondaryColor = secondaryColor;
+	}
+
+	public int getBrushRadius()
+	{
+		return brushRadius;
+	}
+
+	public void setBrushRadius(int brushRadius)
+	{
+		this.brushRadius = brushRadius;
+	}
+
+	public int getEraserRadius()
+	{
+		return eraserRadius;
+	}
+
+	public void setEraserRadius(int eraserRadius)
+	{
+		this.eraserRadius = eraserRadius;
 	}
 }

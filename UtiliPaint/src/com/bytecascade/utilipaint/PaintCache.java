@@ -249,19 +249,25 @@ public class PaintCache
 					switch (action.getActionType())
 					{
 					case REPLACE_PIXEL:
-						bitmap.setPixel(tl.x, tl.y, (Integer) action.getData());
+					{
+						int[] loc = (int[]) ((Object[]) action.getData())[0];
+
+						Log.i("com.bytecascade.utilipaint", "REPLACE_PIXEL "
+								+ loc[0] + "," + loc[1] + ":" + tl + "," + br);
+
+						bitmap.setPixel(loc[0], loc[1],
+								(Integer) ((Object[]) action.getData())[1]);
+					}
 						break;
 					case REPLACE_PIXELS:
+					{
 						int[] bounds = (int[]) ((Object[]) action.getData())[0];
 						int[] pixels = (int[]) ((Object[]) action.getData())[1];
-
-						Log.i("com.bytecascade.utilipaint", "" + bounds[0]
-								+ "," + bounds[1] + ":" + bounds[2] + ","
-								+ bounds[3]);
 
 						bitmap.setPixels(pixels, 0, bounds[2] - bounds[0],
 								bounds[0] - tl.x, bounds[1] - tl.y, bounds[2]
 										- bounds[0], bounds[3] - bounds[1]);
+					}
 						break;
 					default:
 						break;

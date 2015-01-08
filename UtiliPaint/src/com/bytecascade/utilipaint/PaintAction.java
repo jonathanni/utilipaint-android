@@ -62,14 +62,14 @@ public class PaintAction
 	}
 
 	// REPLACE_PIXEL
-	// x1, y1, x2, y2 = loc
-	// data = int = byte[4]
+	// x1, y1 = tlbound
+	// x2, y2 = brbound
+	// data = {int[2], int}
 
 	// REPLACE_PIXELS
 	// x1, y1 = tlbound
 	// x2, y2 = brbound
-	// data = {int[4], int[abs(x1-x2)*abs(y1-y2)]} = {int[4],
-	// byte[4*abs(x1-x2)*abs(y1-y2)]}
+	// data = {int[4], int[abs(x1-x2)*abs(y1-y2)]}
 
 	enum PaintActionType
 	{
