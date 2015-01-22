@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.opengl.GLSurfaceView;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.ScaleGestureDetector;
 
@@ -65,126 +64,61 @@ public class PaintGLSurfaceView extends GLSurfaceView
 
 		final float SCALE = 1 / scaleFactor;
 
-		tchX = Math.min(
-				Math.max(-optotX + (ev.getX(0) - renderer.getWidth() / 2)
-						* SCALE + renderer.getImageWidth() / 2, 0),
-				renderer.getImageWidth());
-		tchY = Math.min(
-				Math.max(-optotY + (ev.getY(0) - renderer.getHeight() / 2)
-						* SCALE + renderer.getImageHeight() / 2, 0),
-				renderer.getImageHeight());
+		final PaintActivity pAct = (PaintActivity) context;
 
-		Log.i("com.bytecascade.utilipaint", "" + tchX + "," + tchY);
+		tchX = -optotX + (ev.getX(0) - renderer.getWidth() / 2) * SCALE
+				+ renderer.getImageWidth() / 2;
+		tchY = -optotY + (ev.getY(0) - renderer.getHeight() / 2) * SCALE
+				+ renderer.getImageHeight() / 2;
 
-		if (((PaintActivity) context).getCurrentTool() == PaintTool.BRUSH)
+		int rtchX = (int) Math.round(tchX), rtchY = (int) Math.round(tchY);
+		boolean inBounds = rtchX >= 0 && rtchX < renderer.getImageWidth()
+				&& rtchY >= 0 && rtchY < renderer.getImageHeight();
+
+		if (inBounds)
 		{
-			for (int x = -(((PaintActivity) context).getBrushRadius()) + 1; x < ((PaintActivity) context)
-					.getBrushRadius(); x++)
-				for (int y = -(((PaintActivity) context).getBrushRadius()) + 1; y < ((PaintActivity) context)
-						.getBrushRadius(); y++)
-					if (Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2.0)) <= ((PaintActivity) context)
-							.getBrushRadius())
-						((PaintActivity) context)
-								.getPaintEvents()
-								.add(new PaintAction(
-										PaintAction.PaintActionType.REPLACE_PIXEL,
-										Math.max(
-												(int) Math.round(tchX)
-														- ((PaintActivity) context)
-																.getBrushRadius()
-														+ 1, 0),
-										Math.max(
-												(int) Math.round(tchY)
-														- ((PaintActivity) context)
-																.getBrushRadius()
-														+ 1, 0),
-										Math.min(
-												(int) Math.round(tchX)
-														+ ((PaintActivity) context)
-																.getBrushRadius(),
-												renderer.getImageWidth()),
-										Math.min(
-												(int) Math.round(tchY)
-														+ ((PaintActivity) context)
-																.getBrushRadius(),
-												renderer.getImageHeight()),
-										new Object[] {
-												new int[] {
-														x
-																+ ((PaintActivity) context)
-																		.getBrushRadius()
-																- 1,
-														y
-																+ ((PaintActivity) context)
-																		.getBrushRadius()
-																- 1 },
-												((PaintActivity) context)
-														.getPrimaryColor() }));
-		}
+			if (pAct.getCurrentTool() == PaintTool.BRUSH && rtchX >= 0)
+				pAct.getPaintEvents().add(
+						new PaintAction(PaintAction.PaintActionType.PAINT, Math
+								.max(rtchX - pAct.getBrushRadius() + 1, 0),
+								Math.max(rtchY - pAct.getBrushRadius() + 1, 0),
+								Math.min(rtchX + pAct.getBrushRadius(),
+										renderer.getImageWidth()), Math.min(
+										rtchY + pAct.getBrushRadius(),
+										renderer.getImageHeight()),
+								new Object[] { new int[] { rtchX, rtchY },
+										pAct.getPrimaryColor() }));
 
-		if (((PaintActivity) context).getCurrentTool() == PaintTool.ERASER)
-		{
-			for (int x = -(((PaintActivity) context).getEraserRadius()) + 1; x < ((PaintActivity) context)
-					.getEraserRadius(); x++)
-				for (int y = -(((PaintActivity) context).getEraserRadius()) + 1; y < ((PaintActivity) context)
-						.getEraserRadius(); y++)
-					if (Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2.0)) <= ((PaintActivity) context)
-							.getEraserRadius())
-						((PaintActivity) context)
-								.getPaintEvents()
-								.add(new PaintAction(
-										PaintAction.PaintActionType.REPLACE_PIXEL,
-										Math.max(
-												(int) Math.round(tchX)
-														- ((PaintActivity) context)
-																.getEraserRadius()
-														+ 1, 0),
-										Math.max(
-												(int) Math.round(tchY)
-														- ((PaintActivity) context)
-																.getEraserRadius()
-														+ 1, 0),
-										Math.min(
-												(int) Math.round(tchX)
-														+ ((PaintActivity) context)
-																.getEraserRadius(),
-												renderer.getImageWidth()),
-										Math.min(
-												(int) Math.round(tchY)
-														+ ((PaintActivity) context)
-																.getEraserRadius(),
-												renderer.getImageHeight()),
-										new Object[] {
-												new int[] {
-														x
-																+ ((PaintActivity) context)
-																		.getEraserRadius()
-																- 1,
-														y
-																+ ((PaintActivity) context)
-																		.getEraserRadius()
-																- 1 }, 0 }));
+			if (pAct.getCurrentTool() == PaintTool.ERASER)
+				pAct.getPaintEvents()
+						.add(new PaintAction(PaintAction.PaintActionType.PAINT,
+								Math.max(rtchX - pAct.getBrushRadius() + 1, 0),
+								Math.max(rtchY - pAct.getBrushRadius() + 1, 0),
+								Math.min(rtchX + pAct.getBrushRadius(),
+										renderer.getImageWidth()), Math.min(
+										rtchY + pAct.getBrushRadius(),
+										renderer.getImageHeight()),
+								new Object[] { new int[] { rtchX, rtchY }, 0 }));
 		}
 
 		if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_DOWN)
 		{
 			down = true;
-			if (((PaintActivity) context).getCurrentTool() == PaintTool.SELECTION)
-				((PaintActivity) this.context).setRectSelectionPoints(
-						(int) Math.round(tchX), (int) Math.round(tchY),
-						(int) Math.round(tchX), (int) Math.round(tchY));
+			if (pAct.getCurrentTool() == PaintTool.SELECTION && inBounds)
+				((PaintActivity) this.context).setRectSelectionPoints(rtchX,
+						rtchY, rtchX, rtchY);
 		} else if ((ev.getAction() & MotionEvent.ACTION_MASK) == MotionEvent.ACTION_UP)
 			down = false;
 
-		if (((PaintActivity) context).getCurrentTool() == PaintTool.SELECTION)
+		if (pAct.getCurrentTool() == PaintTool.SELECTION && inBounds)
 		{
 			Point p = ((PaintActivity) this.context).getRectSelectionPoints()[0];
 			((PaintActivity) this.context).setRectSelectionPoints(p.x, p.y,
-					(int) Math.round(tchX), (int) Math.round(tchY));
+					rtchX, rtchY);
 		}
 
-		if (((PaintActivity) context).getCurrentTool() != PaintTool.PAN_ZOOM
-				&& ((PaintActivity) context).getCurrentTool() != PaintTool.MOVE_PIXELS)
+		if (pAct.getCurrentTool() != PaintTool.PAN_ZOOM
+				&& pAct.getCurrentTool() != PaintTool.MOVE_PIXELS)
 			return true;
 
 		switch (ev.getAction() & MotionEvent.ACTION_MASK)
@@ -211,7 +145,7 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			totX = ptotX + tX * SCALE;
 			totY = ptotY + tY * SCALE;
 
-			if (((PaintActivity) context).getCurrentTool() == PaintTool.PAN_ZOOM)
+			if (pAct.getCurrentTool() == PaintTool.PAN_ZOOM)
 			{
 				final float IWIDTH = renderer.getImageWidth(), IHEIGHT = renderer
 						.getImageHeight();
@@ -231,7 +165,7 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			break;
 		// finger 1 down, finger 2 down
 		case MotionEvent.ACTION_POINTER_DOWN:
-			if (((PaintActivity) context).getCurrentTool() == PaintTool.MOVE_PIXELS)
+			if (pAct.getCurrentTool() == PaintTool.MOVE_PIXELS)
 				break;
 
 			if (ev.getPointerCount() != 2)
@@ -263,7 +197,7 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			break;
 		// finger 1 down, finger 2 up
 		case MotionEvent.ACTION_POINTER_UP:
-			if (((PaintActivity) context).getCurrentTool() == PaintTool.MOVE_PIXELS)
+			if (pAct.getCurrentTool() == PaintTool.MOVE_PIXELS)
 				break;
 
 			if (ev.getPointerCount() != 2)
@@ -285,7 +219,7 @@ public class PaintGLSurfaceView extends GLSurfaceView
 			break;
 		}
 
-		if (((PaintActivity) context).getCurrentTool() != PaintTool.MOVE_PIXELS)
+		if (pAct.getCurrentTool() != PaintTool.MOVE_PIXELS)
 			scaleDetector.onTouchEvent(ev);
 
 		if ((mode == DRAG && scaleFactor != 1f && dragged) || mode == ZOOM)

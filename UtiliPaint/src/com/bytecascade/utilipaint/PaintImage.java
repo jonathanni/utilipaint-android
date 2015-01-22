@@ -172,6 +172,12 @@ public class PaintImage
 		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D,
 				GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
 
+		// Set wrapping
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_S,
+				GLES20.GL_CLAMP_TO_EDGE);
+		GLES20.glTexParameteri(GLES20.GL_TEXTURE_2D, GLES20.GL_TEXTURE_WRAP_T,
+				GLES20.GL_CLAMP_TO_EDGE);
+
 		GLES20.glBindTexture(GLES20.GL_TEXTURE_2D, 0);
 	}
 
@@ -234,16 +240,16 @@ public class PaintImage
 				* surfaceView.getWidth() / 2), VIEWPORT_HH = (int) ((1.0f / psData[4])
 				* surfaceView.getHeight() / 2);
 
-		imageCoords[0] = Math.max(0, (float) fullWidth / 2 + dx - VIEWPORT_HW);
+		imageCoords[0] = Math.max(0, (float) fullWidth / 2 + dx - VIEWPORT_HW - 1);
 		imageCoords[1] = Math.min(fullHeight, (float) fullHeight / 2 + dy
 				+ VIEWPORT_HH);
 
-		imageCoords[2] = Math.max(0, (float) fullWidth / 2 + dx - VIEWPORT_HW);
-		imageCoords[3] = Math.max(0, (float) fullHeight / 2 + dy - VIEWPORT_HH);
+		imageCoords[2] = Math.max(0, (float) fullWidth / 2 + dx - VIEWPORT_HW - 1);
+		imageCoords[3] = Math.max(0, (float) fullHeight / 2 + dy - VIEWPORT_HH - 1);
 
 		imageCoords[4] = Math.min(fullWidth, (float) fullWidth / 2 + dx
 				+ VIEWPORT_HW);
-		imageCoords[5] = Math.max(0, (float) fullHeight / 2 + dy - VIEWPORT_HH);
+		imageCoords[5] = Math.max(0, (float) fullHeight / 2 + dy - VIEWPORT_HH - 1);
 
 		imageCoords[6] = Math.min(fullWidth, (float) fullWidth / 2 + dx
 				+ VIEWPORT_HW);

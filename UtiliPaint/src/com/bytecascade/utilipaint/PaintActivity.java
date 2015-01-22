@@ -62,7 +62,7 @@ public class PaintActivity extends MenuActivity implements
 
 	private int primaryColor = Color.argb(255, 0, 0, 0), secondaryColor = Color
 			.argb(255, 255, 255, 255);
-	
+
 	private int brushRadius = 8, eraserRadius = 8;
 
 	private static final String FILE_URI_STRING = "com.bytecascade.utilipaint.FILE_URI";
@@ -73,6 +73,8 @@ public class PaintActivity extends MenuActivity implements
 	private Uri saveUri = null;
 
 	private Menu optionMenu;
+
+	private volatile boolean updated = false;
 
 	@Override
 	public void onSaveInstanceState(Bundle frozenState)
@@ -177,8 +179,6 @@ public class PaintActivity extends MenuActivity implements
 							for (int row = Math.min(p1.y, p2.y); row < Math
 									.max(p1.y, p2.y); row++)
 							{
-								Log.i("com.bytecascade.utilipaint", "" + row);
-
 								int[] colors = new int[x2 - x1];
 
 								paintEvents
@@ -257,8 +257,10 @@ public class PaintActivity extends MenuActivity implements
 				}
 
 				if (currentTool == PaintTool.PAN_ZOOM)
+				{
 					glsv.restoreCoords();
-				else if (lastTool == PaintTool.PAN_ZOOM)
+					task.updateImage();
+				} else if (lastTool == PaintTool.PAN_ZOOM)
 					glsv.storeCoords();
 			}
 
@@ -341,10 +343,13 @@ public class PaintActivity extends MenuActivity implements
 			e.printStackTrace();
 		}
 
-		((PaintGLSurfaceView) this.findViewById(R.id.graphics_view)).setImage(
-				defaultImage, this.getCache().WIDTH, this.getCache().HEIGHT);
+		PaintGLSurfaceView glsv = (PaintGLSurfaceView) this
+				.findViewById(R.id.graphics_view);
+
+		glsv.setImage(test, this.getCache().WIDTH, this.getCache().HEIGHT);
 
 		new Thread(cache.new PaintCacheUpdater()).start();
+
 	}
 
 	@Override
@@ -449,9 +454,9 @@ public class PaintActivity extends MenuActivity implements
 			intent.setType("image/*");
 			startActivityForResult(intent, SAVEFILE_REQUEST_CODE);
 
-			//MenuItem save = this.optionMenu.findItem(R.id.action_file)
-			//		.getSubMenu().findItem(R.id.action_save);
-			//save.setEnabled(true);
+			// MenuItem save = this.optionMenu.findItem(R.id.action_file)
+			// .getSubMenu().findItem(R.id.action_save);
+			// save.setEnabled(true);
 		}
 
 		// leave no return
@@ -484,9 +489,9 @@ public class PaintActivity extends MenuActivity implements
 		return cursor.getString(column_index);
 	}
 
-	public long getAvailableMemory()
+	public UpdateAsyncTask getTask()
 	{
-		return task.getAvailableMemory();
+		return task;
 	}
 
 	public PaintCache getCache()
@@ -556,5 +561,15 @@ public class PaintActivity extends MenuActivity implements
 	public void setEraserRadius(int eraserRadius)
 	{
 		this.eraserRadius = eraserRadius;
+	}
+
+	public boolean isUpdated()
+	{
+		return updated;
+	}
+
+	public void setUpdated(boolean updated)
+	{
+		this.updated = updated;
 	}
 }

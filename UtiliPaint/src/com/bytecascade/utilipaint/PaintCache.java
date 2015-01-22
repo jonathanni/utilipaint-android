@@ -14,7 +14,6 @@ import android.graphics.BitmapRegionDecoder;
 import android.graphics.Color;
 import android.graphics.Point;
 import android.graphics.Rect;
-import android.util.Log;
 
 public class PaintCache
 {
@@ -47,7 +46,7 @@ public class PaintCache
 		options.inPreferQualityOverSpeed = true;
 		options.inPreferredConfig = Bitmap.Config.ARGB_8888;
 
-		if (this.WIDTH * 4 + 1024 < ((PaintActivity) context)
+		if (this.WIDTH * 4 + 1024 < ((PaintActivity) context).getTask()
 				.getAvailableMemory())
 		{
 			BitmapRegionDecoder decoder = BitmapRegionDecoder.newInstance(
@@ -88,7 +87,7 @@ public class PaintCache
 		this.WIDTH = other.WIDTH;
 		this.HEIGHT = other.HEIGHT;
 
-		if (this.WIDTH * 4 + 1024 < ((PaintActivity) this.context)
+		if (this.WIDTH * 4 + 1024 < ((PaintActivity) this.context).getTask()
 				.getAvailableMemory())
 		{
 			for (int i = 0; i < y1; i++)
@@ -158,8 +157,6 @@ public class PaintCache
 
 	private void setBitmap(Bitmap bitmap, int x, int y)
 	{
-		Log.i("com.bytecascade.utilipaint", ":" + x + "," + y);
-
 		int[] buf = new int[bitmap.getWidth() * bitmap.getHeight()];
 		bitmap.getPixels(buf, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(),
 				bitmap.getHeight());
@@ -248,15 +245,28 @@ public class PaintCache
 
 					switch (action.getActionType())
 					{
-					case REPLACE_PIXEL:
+
+					// The brush can sometimes go out of bounds
+					case PAINT:
 					{
 						int[] loc = (int[]) ((Object[]) action.getData())[0];
 
-						Log.i("com.bytecascade.utilipaint", "REPLACE_PIXEL "
-								+ loc[0] + "," + loc[1] + ":" + tl + "," + br);
-
-						bitmap.setPixel(loc[0], loc[1],
-								(Integer) ((Object[]) action.getData())[1]);
+						for (int x = -(((PaintActivity) context)
+								.getBrushRadius()) + 1; x < ((PaintActivity) context)
+								.getBrushRadius(); x++)
+							for (int y = -(((PaintActivity) context)
+									.getBrushRadius()) + 1; y < ((PaintActivity) context)
+									.getBrushRadius(); y++)
+								if (Math.sqrt(Math.pow(x, 2.0)
+										+ Math.pow(y, 2.0)) <= ((PaintActivity) context)
+										.getBrushRadius())
+									bitmap.setPixel(Math.min(
+											Math.max(x + (loc[0] - tl.x), 0),
+											bitmap.getWidth() - 1), Math.min(
+											Math.max(y + (loc[1] - tl.y), 0),
+											bitmap.getHeight() - 1),
+											(Integer) ((Object[]) action
+													.getData())[1]);
 					}
 						break;
 					case REPLACE_PIXELS:
@@ -272,6 +282,8 @@ public class PaintCache
 					default:
 						break;
 					}
+
+					((PaintActivity) context).setUpdated(true);
 				}
 			} catch (InterruptedException e)
 			{

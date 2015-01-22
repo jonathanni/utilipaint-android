@@ -1,7 +1,5 @@
 package com.bytecascade.utilipaint;
 
-import java.util.Arrays;
-
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
@@ -23,7 +21,6 @@ public class PaintRenderer implements Renderer
 	private PaintCheckerboard bg;
 	private PaintSelectionRect selection;
 	private PaintImage image;
-	private PaintImage selImage;
 	private Context context;
 	private Bitmap rawImage;
 

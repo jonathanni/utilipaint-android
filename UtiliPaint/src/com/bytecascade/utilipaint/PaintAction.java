@@ -61,7 +61,7 @@ public class PaintAction
 		this.data = data;
 	}
 
-	// REPLACE_PIXEL
+	// PAINT
 	// x1, y1 = tlbound
 	// x2, y2 = brbound
 	// data = {int[2], int}
@@ -73,6 +73,6 @@ public class PaintAction
 
 	enum PaintActionType
 	{
-		REPLACE_PIXEL, REPLACE_PIXELS;
+		PAINT, REPLACE_PIXELS;
 	}
 }
